@@ -35,6 +35,7 @@ import java.util.Locale;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.health_advice_app.Data.FFT;
 import com.example.health_advice_app.databinding.ActivityMainBinding;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private Thread audioThread;
     private SensorManager sensorManager;
     private SensorEventListener sensorListener;
+    private int firstmeasure = 1;
 
     private double latitude = 0.0, longitude = 0.0;
     private float lux = 0f;
@@ -72,8 +74,49 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        setting();
+        requestGPSpermission();
         clickButton();
+    }
+
+    protected void requestGPSpermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+        else {
+            requestAUDIOpermission();
+        }
+    }
+
+    protected void requestAUDIOpermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 2);
+        }
+        else {
+            setting(); // 이후에 다른 권한이 필요할 경우 여기에 순차적으로 실행.
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // GPS 권한 허용 → 오디오 권한 요청
+                requestAUDIOpermission();
+            } else {
+                Toast.makeText(this, "need GPS permission! If not, app will terminate", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == 2) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 모든 권한 완료
+                setting();
+            } else {
+                Toast.makeText(this, "need MIC permission! If not, app will terminate", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     protected void setting() {
@@ -84,8 +127,12 @@ public class MainActivity extends AppCompatActivity {
             public void onLocationChanged(@NonNull Location location) {
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
+                Log.d("GPS", "위치 수신됨: " + latitude + ", " + longitude);
+
             }
         };
+
+        binding.tvFirst.setText("GPS setting complete !! ...");
 
         // 데시벨, 파형, 주파수 측정
         int sampleRate = 44100;
@@ -94,13 +141,14 @@ public class MainActivity extends AppCompatActivity {
                 AudioFormat.ENCODING_PCM_16BIT);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 2);
-            return; // 권한 없으면 바로 중단 (audioRecord 생성하지 않음)
         }
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC,
                 sampleRate,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
                 bufferSize);
+
+        binding.tvFirst.setText("Audio setting complete !! ...");
 
         // Sensors
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -117,27 +165,41 @@ public class MainActivity extends AppCompatActivity {
                     gyro[0] = event.values[0];
                     gyro[1] = event.values[1];
                     gyro[2] = event.values[2];
+                    sensorManager.unregisterListener(this);
                 }
             }
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {}
         };
 
+        binding.tvFirst.setText("Sensors setting complete !! ...");
+
 //        if (sensorManager == null) {
+//            binding.tvFirst.setText("sensorManager laoding fail !!!");
 //            sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 //            if (sensorManager == null) {
 //                Log.e("Sensor", "SensorManager 초기화 실패");
 //                return;
 //            }
 //        }
-
         binding.tvFirst.setText("setting done, you can press button.");
     }
 
     protected void startMeasurement() {
         // GPS 시작
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4500, 2, locationListener);
+            if (firstmeasure == 0) locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4500, 3, locationListener);
+            else {
+                Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (lastLocation != null) {
+                    latitude = lastLocation.getLatitude();
+                    longitude = lastLocation.getLongitude();
+                    Log.d("GPS", "최근 위치 사용: " + latitude + ", " + longitude);
+                } else {
+                    Log.d("GPS", "최근 위치 정보 없음 (null)");
+                }
+                firstmeasure = 0;
+            }
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
@@ -169,10 +231,10 @@ public class MainActivity extends AppCompatActivity {
                     real[i] = buffer[i];  // 실수부
                     imag[i] = 0;          // 허수부 0
                 }
+
                 FFT fft = new FFT(1024);
                 fft.fft(real, imag);
 
-                double[] magnitude = new double[1024 / 2];
                 for (int i = 0; i < 1024 / 2; i++) {
                     magnitude[i] = Math.sqrt(real[i]*real[i] + imag[i]*imag[i]);
                 }
@@ -185,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
         sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT), SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL);
+
     }
 
     protected void clickButton(){
@@ -223,10 +286,19 @@ public class MainActivity extends AppCompatActivity {
                             .append("최대 진폭: ").append(String.format(Locale.US, "%.2f", peak)).append("\n\n");
 
                     // 6. FFT 주파수 대역별 크기
-                    info.append("🎵 FFT 주파수 대역 크기 (약 43Hz 단위)\n");
-                    for (int i = 0; i < 10 && i < magnitude.length; i++) {
-                        double freq = i * 44100.0 / 1024; // 대역별 주파수 계산
-                        info.append(String.format(Locale.US, "[%.0fHz] %.2f\n", freq, magnitude[i]));
+                    info.append("🎵 FFT 주파수 대역 크기\n");
+                    double binHz = 44100.0 / 1024.0;
+                    double[] bandEdges = {100, 200, 400, 800, 1200, 1700, 2400, 3200, 4500, 6000, 8000};
+
+                    for (int b = 0; b < bandEdges.length - 1; b++) {
+                        int startBin = (int)(bandEdges[b] / binHz);
+                        int endBin = (int)(bandEdges[b + 1] / binHz);
+                        double sum = 0;
+                        for (int i = startBin; i < endBin; i++) {
+                            sum += magnitude[i];
+                        }
+                        double avg = sum / (endBin - startBin);
+                        info.append(String.format(Locale.US, "[%.0f~%.0fHz] %.2f\n", bandEdges[b], bandEdges[b + 1], avg));
                     }
 
                     // TextView에 설정
