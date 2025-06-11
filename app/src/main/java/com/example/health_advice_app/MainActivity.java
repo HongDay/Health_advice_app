@@ -1,7 +1,9 @@
 package com.example.health_advice_app;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -13,6 +15,8 @@ import android.location.LocationManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -25,12 +29,17 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Calendar;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -49,6 +58,12 @@ public class MainActivity extends AppCompatActivity {
     private Thread audioThread;
     private SensorManager sensorManager;
     private SensorEventListener sensorListener;
+    private WifiManager mWifiManager;
+    private IntentFilter mIntentFilter;
+    private Handler scanHandler;
+    private Runnable scanRunnable;
+    private boolean isScanRequested = false;
+    private static final String TAG = "MainActivity";
     private int firstmeasure = 1;
 
     private double latitude = 0.0, longitude = 0.0;
@@ -58,8 +73,60 @@ public class MainActivity extends AppCompatActivity {
     private double decibel = 0.0;
     private double peak = 0.0;
     private double[] magnitude = new double[512];
+    private int bssidCnt = 0;
+    private int rssiSum = 0;
+    private Map<String, Integer> bssidToIndex = new HashMap<>(); // 근데 얘는 서버에 저장하는게 맞을듯
+    private List<Integer> top10Rssi = new ArrayList<>();
+    private List<Integer> top10BssidIndex = new ArrayList<>();
+    private long seconds;
+    private int week;
 
     private int bufferSize;
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(action)) {
+                Log.e(TAG, "Scan results available");
+
+                if (!isScanRequested) {
+                    Log.e(TAG, "Ignoared : onRceive called while scan request is failed");
+                    return;
+                }
+
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    List<ScanResult> scanResults = mWifiManager.getScanResults();
+                    bssidCnt = scanResults.size();
+
+                    List<ScanResult> sortedResults = new ArrayList<>(scanResults);
+                    sortedResults.sort((a,b) -> Integer.compare(b.level, a.level));
+
+                    int limit = Math.min(10, bssidCnt);
+                    for (int i = 0; i < limit; i++) {
+                        ScanResult sr = sortedResults.get(i);
+                        rssiSum += sr.level;
+                        top10Rssi.add(sr.level);
+
+                        int bssidIndex;
+                        String curBssid = sr.BSSID;
+                        if (bssidToIndex.containsKey(curBssid)){
+                            bssidIndex = bssidToIndex.get(curBssid);
+                        } else {
+                            bssidToIndex.put(curBssid, bssidToIndex.size());
+                            bssidIndex = bssidToIndex.get(curBssid);
+                        }
+                        top10BssidIndex.add(bssidIndex);
+                    }
+                    Log.e(TAG, "Scan results displayed!!");
+                } else {
+                    Log.e(TAG, "@@@@@ no permission for scanning !!");
+                }
+            } else {
+                Log.e(TAG, "Scan results unavailable!!!");
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +140,10 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        mWifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+        mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
 
         requestGPSpermission();
         clickButton();
@@ -172,6 +243,9 @@ public class MainActivity extends AppCompatActivity {
             public void onAccuracyChanged(Sensor sensor, int accuracy) {}
         };
 
+        // WiFi
+        registerReceiver(mReceiver, mIntentFilter);
+
         binding.tvFirst.setText("Sensors setting complete !! ...");
 
 //        if (sensorManager == null) {
@@ -248,6 +322,29 @@ public class MainActivity extends AppCompatActivity {
         sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL);
 
+        // Wifi 시작
+        scanHandler = new Handler();
+        scanRunnable = new Runnable() {
+            @Override
+            public void run() {
+                boolean scanStarted = mWifiManager.startScan();
+                if (!scanStarted) {
+                    isScanRequested = false;
+                    Log.e(TAG, "WiFi scan failed..");
+                } else {
+                    isScanRequested = true;
+                    Log.e(TAG, "Scan request success");
+                }
+            }
+        };
+        scanHandler.post(scanRunnable);
+
+        // 시각
+        Calendar calendar = Calendar.getInstance();
+        seconds = calendar.get(Calendar.HOUR_OF_DAY) * 3600L
+                + calendar.get(Calendar.MINUTE) * 60L
+                + calendar.get(Calendar.SECOND);
+        week = calendar.get(Calendar.DAY_OF_WEEK);
     }
 
     protected void clickButton(){
@@ -300,6 +397,21 @@ public class MainActivity extends AppCompatActivity {
                         double avg = sum / (endBin - startBin);
                         info.append(String.format(Locale.US, "[%.0f~%.0fHz] %.2f\n", bandEdges[b], bandEdges[b + 1], avg));
                     }
+
+                    info.append("\n🛜 WIFI 정보\n");
+                    info.append("BSSID count = ").append(bssidCnt).append("\n");
+                    info.append("RSSI sum = ").append(rssiSum).append("\n");
+                    info.append("TOP 10 BSSID index : \n");
+                    for (Integer bssidx : top10BssidIndex) {
+                        info.append(bssidx.toString()).append("\n");
+                    }
+                    for (Integer rssi : top10Rssi){
+                        info.append(rssi.toString()).append("\n");
+                    }
+
+                    info.append("\n 시각, 요일 정보\n");
+                    info.append("초 = ").append(seconds).append("\n");
+                    info.append("요일 = ").append(week).append("\n");
 
                     // TextView에 설정
                     binding.tvFirst.setText(info.toString());
