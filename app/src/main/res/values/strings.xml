@@ -1,3 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Health_advice_app</string>
+    <!-- 앱 이름, 버튼 텍스트 등 모든 문자열을 여기서 관리 -->
+
+    <string name="app_name">LifeLogU</string>
+    <string name="sign_in">Sign In</string>
+    <string name="already_have_account">Already have an account?</string>
+
+    <string name="enter_name">Name</string>
+    <string name="enter_birthday">Birthday</string>
+    <string name="enter_school">School</string>
+    <string name="enter_height">Height (cm)</string>
+    <string name="enter_weight">Weight (kg)</string>
+    <string name="timetable_label">Time Table</string>
+    <string name="continue_text">Continue</string>
+
+    <!-- ImageView의 contentDescription(접근성) 용 텍스트 -->
+    <string name="app_icon_description">App Icon</string>
+
+    <string name="agreement_title">Sensitive Information Collection Agreement</string>
+    <string name="agreement_message">
+        This app works by collecting your location information,\n sound information (decibels and waveforms), sending it to a server,\n and training it into a model that fits you.\n In order to continue using this app, you must agree to our collection\n of this sensitive information.\n Do you agree to the above?
+    </string>
+
+    <string name="optimization_title">About the Optimization Period (3 days)</string>
+    <string name="optimization_message">
+        The app will go through a 3-day optimization period to better predict your lifestyle and give you thorough feedback.\n During this period, you will be periodically asked simple questions about your health, and the more quickly and accurately you answer them, the more accurate the app will be.\n After the 3-day optimization period, there will be sessions twice a day where you can manually fix errors before receiving feedback, and the server will continue to optimize for you.\n Do you agree to actively participate in the optimization period survey?
+    </string>
+
+    <string name="agree_checkbox">Yes, I agree.</string>
 </resources>

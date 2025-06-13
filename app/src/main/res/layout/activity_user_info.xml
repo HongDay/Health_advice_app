@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- 상단 바: 아이콘 + "LifeLogU" -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@color/colorPrimary"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="12dp"
+                android:src="@drawable/icon"
+                android:contentDescription="@string/app_icon_description"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/app_name"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                android:fontFamily="sans-serif-medium"
+                tools:ignore="HardcodedText"/>
+        </LinearLayout>
+
+        <!-- Name 입력란 -->
+        <EditText
+            android:id="@+id/et_name"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/inputBackground"
+            android:hint="@string/enter_name"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif"
+            android:inputType="textPersonName"
+            tools:ignore="HardcodedText,MissingAutofillHints"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorPrimaryDark"/>
+
+        <!-- Birthday 입력란 -->
+        <EditText
+            android:id="@+id/et_birthday"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/inputBackground"
+            android:hint="@string/enter_birthday"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif"
+            android:inputType="date"
+            tools:ignore="HardcodedText,MissingAutofillHints"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorPrimaryDark"/>
+
+        <!-- School 입력란 -->
+        <EditText
+            android:id="@+id/et_school"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/inputBackground"
+            android:hint="@string/enter_school"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif"
+            android:inputType="text"
+            tools:ignore="HardcodedText,MissingAutofillHints"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorPrimaryDark"/>
+
+        <!-- Height 입력란 -->
+        <EditText
+            android:id="@+id/et_height"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/inputBackground"
+            android:hint="@string/enter_height"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif"
+            android:inputType="numberDecimal"
+            tools:ignore="HardcodedText,MissingAutofillHints"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorPrimaryDark"/>
+
+        <!-- Weight 입력란 -->
+        <EditText
+            android:id="@+id/et_weight"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/inputBackground"
+            android:hint="@string/enter_weight"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif"
+            android:inputType="numberDecimal"
+            tools:ignore="HardcodedText,MissingAutofillHints"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorPrimaryDark"/>
+
+        <!-- “Time Table” 레이블 -->
+        <TextView
+            android:id="@+id/tv_timetable_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/timetable_label"
+            android:textSize="18sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="sans-serif-medium"
+            tools:ignore="HardcodedText"/>
+
+        <!-- 전체 시간표: 가로/세로 스크롤 가능 -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+            <!-- 내부 ScrollView를 사용해야 세로 스크롤이 정상 동작합니다 -->
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fillViewport="true"
+                android:scrollbars="none">
+
+                <!-- WeekTimetableView 커스텀 뷰 -->
+                <com.example.health_advice_app.WeekTimetableView
+                    android:id="@+id/weekTimetableView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </ScrollView>
+        </HorizontalScrollView>
+
+        <!-- Continue 버튼 -->
+        <Button
+            android:id="@+id/btn_userinfo_continue"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/continue_text"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/disabledButton"
+            android:enabled="false"
+            android:fontFamily="sans-serif-medium"
+            tools:ignore="HardcodedText"/>
+    </LinearLayout>
+</ScrollView>

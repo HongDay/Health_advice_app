@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- 주로 사용하는 색상들 -->
+    <color name="colorPrimary">#6FC3B5</color>
+    <color name="colorPrimaryDark">#5BAA9E</color>
+    <color name="colorAccent">#6FC3B5</color>
+    <color name="inputBackground">#D1E4E0</color>     <!-- EditText 배경색 -->
+    <color name="disabledButton">#B0B0B0</color>     <!-- 비활성화 버튼 색 -->
 </resources>
