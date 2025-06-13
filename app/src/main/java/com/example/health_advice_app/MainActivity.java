@@ -33,7 +33,11 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,11 +51,14 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.health_advice_app.Data.FFT;
+import com.example.health_advice_app.Data.SensorData;
+import com.example.health_advice_app.Data.SensorViewModel;
 import com.example.health_advice_app.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private SensorViewModel sensorViewModel;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private AudioRecord audioRecord;
@@ -61,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
     private WifiManager mWifiManager;
     private IntentFilter mIntentFilter;
     private Handler scanHandler;
+    // 클래스 멤버로 선언
+    private Handler handler = new Handler(Looper.getMainLooper());
+
     private Runnable scanRunnable;
     private boolean isScanRequested = false;
     private static final String TAG = "MainActivity";
@@ -76,12 +86,13 @@ public class MainActivity extends AppCompatActivity {
     private int bssidCnt = 0;
     private int rssiSum = 0;
     private Map<String, Integer> bssidToIndex = new HashMap<>(); // 근데 얘는 서버에 저장하는게 맞을듯
-    private List<Integer> top10Rssi = new ArrayList<>();
-    private List<Integer> top10BssidIndex = new ArrayList<>();
+    private int[] top10Rssi = {0,0,0,0,0,0,0,0,0,0};
+    private int[] top10BssidIndex = {0,0,0,0,0,0,0,0,0,0};
     private long seconds;
     private int week;
 
     private int bufferSize;
+    private String category = "null";
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -102,11 +113,13 @@ public class MainActivity extends AppCompatActivity {
                     List<ScanResult> sortedResults = new ArrayList<>(scanResults);
                     sortedResults.sort((a,b) -> Integer.compare(b.level, a.level));
 
+                    rssiSum = 0;
+
                     int limit = Math.min(10, bssidCnt);
                     for (int i = 0; i < limit; i++) {
                         ScanResult sr = sortedResults.get(i);
                         rssiSum += sr.level;
-                        top10Rssi.add(sr.level);
+                        top10Rssi[i] = (sr.level);
 
                         int bssidIndex;
                         String curBssid = sr.BSSID;
@@ -116,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                             bssidToIndex.put(curBssid, bssidToIndex.size());
                             bssidIndex = bssidToIndex.get(curBssid);
                         }
-                        top10BssidIndex.add(bssidIndex);
+                        top10BssidIndex[i] = (bssidIndex);
                     }
                     Log.e(TAG, "Scan results displayed!!");
                 } else {
@@ -135,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        sensorViewModel = new ViewModelProvider(this).get(SensorViewModel.class);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -147,6 +162,57 @@ public class MainActivity extends AppCompatActivity {
 
         requestGPSpermission();
         clickButton();
+        clickStudy();
+        clickClass();
+        clickElse();
+        clickExercise();
+        clickSleep();
+        clickEmail();
+    }
+
+    protected void clickStudy(){
+        binding.button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                category = "study";
+            }
+        });
+    }
+
+    protected void clickExercise(){
+        binding.button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                category = "exercise";
+            }
+        });
+    }
+
+    protected void clickClass(){
+        binding.button4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                category = "class";
+            }
+        });
+    }
+
+    protected void clickSleep(){
+        binding.button5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                category = "sleep";
+            }
+        });
+    }
+
+    protected void clickElse(){
+        binding.button6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                category = "else";
+            }
+        });
     }
 
     protected void requestGPSpermission() {
@@ -351,72 +417,88 @@ public class MainActivity extends AppCompatActivity {
         binding.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startMeasurement();
-
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    StringBuilder info = new StringBuilder();
-
-                    // 1. 위치 정보
-                    info.append("📍 위치 정보\n")
-                            .append("위도: ").append(latitude).append("\n")
-                            .append("경도: ").append(longitude).append("\n\n");
-
-                    // 2. 조도 센서
-                    info.append("💡 조도 센서\n")
-                            .append("조도: ").append(lux).append(" lx\n\n");
-
-                    // 3. 가속도 센서
-                    info.append("📈 가속도계\n")
-                            .append("x: ").append(accel[0]).append("\n")
-                            .append("y: ").append(accel[1]).append("\n")
-                            .append("z: ").append(accel[2]).append("\n\n");
-
-                    // 4. 자이로 센서
-                    info.append("🌀 자이로 센서\n")
-                            .append("x: ").append(gyro[0]).append("\n")
-                            .append("y: ").append(gyro[1]).append("\n")
-                            .append("z: ").append(gyro[2]).append("\n\n");
-
-                    // 5. 오디오 정보
-                    info.append("🔊 오디오 정보\n")
-                            .append("데시벨: ").append(String.format(Locale.US, "%.2f", decibel)).append(" dB\n")
-                            .append("최대 진폭: ").append(String.format(Locale.US, "%.2f", peak)).append("\n\n");
-
-                    // 6. FFT 주파수 대역별 크기
-                    info.append("🎵 FFT 주파수 대역 크기\n");
-                    double binHz = 44100.0 / 1024.0;
-                    double[] bandEdges = {100, 200, 400, 800, 1200, 1700, 2400, 3200, 4500, 6000, 8000};
-
-                    for (int b = 0; b < bandEdges.length - 1; b++) {
-                        int startBin = (int)(bandEdges[b] / binHz);
-                        int endBin = (int)(bandEdges[b + 1] / binHz);
-                        double sum = 0;
-                        for (int i = startBin; i < endBin; i++) {
-                            sum += magnitude[i];
-                        }
-                        double avg = sum / (endBin - startBin);
-                        info.append(String.format(Locale.US, "[%.0f~%.0fHz] %.2f\n", bandEdges[b], bandEdges[b + 1], avg));
-                    }
-
-                    info.append("\n🛜 WIFI 정보\n");
-                    info.append("BSSID count = ").append(bssidCnt).append("\n");
-                    info.append("RSSI sum = ").append(rssiSum).append("\n");
-                    info.append("TOP 10 BSSID index : \n");
-                    for (Integer bssidx : top10BssidIndex) {
-                        info.append(bssidx.toString()).append("\n");
-                    }
-                    for (Integer rssi : top10Rssi){
-                        info.append(rssi.toString()).append("\n");
-                    }
-
-                    info.append("\n 시각, 요일 정보\n");
-                    info.append("초 = ").append(seconds).append("\n");
-                    info.append("요일 = ").append(week).append("\n");
-
-                    // TextView에 설정
-                    binding.tvFirst.setText(info.toString());
-                }, 5000); // 측정 종료 타이밍
+                startRepeatMeasure();
             }
         });
+    }
+
+    protected void clickEmail(){
+        binding.email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<SensorData> dataList = sensorViewModel.getDataList();  // ViewModel에서 데이터 가져옴
+
+                File csvFile = new File(getExternalFilesDir(null), "sensor_data.csv");
+
+                try (FileWriter writer = new FileWriter(csvFile)) {
+
+                    writer.write("category,sec,week,latitude,longitude,lux,accelx,accely,accelz,gyroX,gyroY,gyroZ,decibel,peak," +
+                            "mag1,mag2,mag3,mag4,mag5,mag6,mag7,mag8,mag9,mag0," +
+                            "bssidcnt,rssisum," +
+                            "idx1,idx2,idx3,idx4,idx5,idx6,idx7,idx8,idx9,idx0," +
+                            "rssi1,rssi2,rssi3,rssi4,rssi5,rssi6,rssi7,rssi8,rssi9,rssi0," +
+                            "\n");
+
+                    for (SensorData data : dataList) {
+                        writer.write(data.toCsvLine());
+                    }
+
+                    writer.flush();
+
+                    Toast.makeText(getApplicationContext(), "CSV 파일 저장 완료:\n" + csvFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "CSV 저장 실패: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void startRepeatMeasure() {
+        startMeasurement();
+
+        Runnable measureTask = new Runnable() {
+            @Override
+            public void run() {
+                double[] bands = new double[10];
+                double binHz = 44100.0 / 1024.0;
+                double[] bandEdges = {100, 200, 400, 800, 1200, 1700, 2400, 3200, 4500, 6000, 8000};
+                for(int b = 0; b < 10; b++){
+                    int startBin = (int) (bandEdges[b] / binHz);
+                    int endBin = (int) (bandEdges[b + 1] / binHz);
+                    double sum = 0;
+                    for (int i = startBin; i < endBin; i++) {
+                        sum += magnitude[i];
+                    }
+                    double avg = sum / (endBin - startBin);
+                    bands[b] = avg;
+                }
+
+                SensorData data = new SensorData(
+                        category, latitude, longitude, lux,
+                        accel[0], accel[1], accel[2],
+                        gyro[0], gyro[1], gyro[2],
+                        decibel, peak,
+                        bands[0], bands[1], bands[2], bands[3], bands[4], bands[5],
+                        bands[6], bands[7], bands[8], bands[9],
+                        bssidCnt, rssiSum,
+                        top10BssidIndex[0], top10BssidIndex[1], top10BssidIndex[2],
+                        top10BssidIndex[3], top10BssidIndex[4], top10BssidIndex[5],
+                        top10BssidIndex[6], top10BssidIndex[7], top10BssidIndex[8], top10BssidIndex[9],
+                        top10Rssi[0], top10Rssi[1], top10Rssi[2], top10Rssi[3], top10Rssi[4],
+                        top10Rssi[5], top10Rssi[6], top10Rssi[7], top10Rssi[8], top10Rssi[9],
+                        seconds, week
+                );
+
+                sensorViewModel.addData(data);
+
+                startMeasurement();
+                handler.postDelayed(this, 5000);
+            }
+
+        };
+
+        handler.postDelayed(measureTask, 5000);
     }
 }
