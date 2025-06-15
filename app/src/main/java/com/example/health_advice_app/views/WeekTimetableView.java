@@ -1,4 +1,4 @@
-package com.example.health_advice_app;
+package com.example.health_advice_app.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -11,9 +11,12 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.example.health_advice_app.Data.MyData;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -50,6 +53,9 @@ public class WeekTimetableView extends View {
     // 드래그 시 마지막 터치한 행/열 (중복 토글 방지용)
     private int lastTouchedRow = -1;
     private int lastTouchedDay = -1;
+
+    public void setEvents(List<MyData> list) {
+    }
 
     // 선택 상태 변경 리스너
     public interface OnSelectionChangeListener {

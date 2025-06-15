@@ -6,4 +6,7 @@
     <color name="colorAccent">#6FC3B5</color>
     <color name="inputBackground">#D1E4E0</color>     <!-- EditText 배경색 -->
     <color name="disabledButton">#B0B0B0</color>     <!-- 비활성화 버튼 색 -->
+    <color name="white">#FFFFFF</color>
+    <color name="purple_200">#BB86FC</color>
+    <color name="teal_200">#03DAC5</color>
 </resources>
