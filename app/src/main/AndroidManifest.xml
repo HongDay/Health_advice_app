@@ -24,20 +24,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-        <!-- 시작 액티비티: SignInActivity -->
+        <activity android:name=".SignInActivity" />
+        <activity android:name=".UserInfoActivity" />
+        <activity android:name=".AgreementActivity" />
+        <activity android:name=".OptimizationActivity" />
         <activity
-            android:name=".SignInActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- 순서대로 선언된 나머지 액티비티들 -->
-        <activity android:name=".UserInfoActivity" />
-        <activity android:name=".AgreementActivity" />
-        <activity android:name=".OptimizationActivity" />
+        <activity android:name=".EstimateActivity" />
 
     </application>
 
