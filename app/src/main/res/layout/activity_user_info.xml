@@ -161,7 +161,7 @@
                 android:scrollbars="none">
 
                 <!-- WeekTimetableView 커스텀 뷰 -->
-                <com.example.health_advice_app.WeekTimetableView
+                <com.example.health_advice_app.views.WeekTimetableView
                     android:id="@+id/weekTimetableView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>

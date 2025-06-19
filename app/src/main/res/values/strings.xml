@@ -28,4 +28,11 @@
     </string>
 
     <string name="agree_checkbox">Yes, I agree.</string>
+    <string name="preview_timetable">Preview Timetable</string>
+    <string name="ok_button">OK</string>
+    <string name="daily_report">Your Daily Report</string>
+    <string name="ok">OK</string>
+    <string name="preview_title">Check if your log is correct</string>
+    <string name="before_report">Before the report</string>
+    <string name="your_daily_report">Your Daily Report</string>
 </resources>
