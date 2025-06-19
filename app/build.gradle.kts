@@ -1,5 +1,6 @@
 plugins {
-    alias(libs.plugins.android.application)
+    id("com.android.application") version "8.9.2"
+    kotlin("android") version "1.8.22"
 }
 
 android {
@@ -39,10 +40,17 @@ android {
 
 dependencies {
 
+    implementation("androidx.core:core-ktx:1.9.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+
+    implementation("com.jjoe64:graphview:4.2.2") {
+        exclude(group = "com.android.support", module = "support-compat")
+        exclude(group = "com.android.support", module = "support-v4")
+    }
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
