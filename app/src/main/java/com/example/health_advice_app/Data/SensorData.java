@@ -126,4 +126,13 @@ public class SensorData {
                 rssi6 + "," + rssi7 + "," + rssi8 + "," + rssi9 + "," + rssi0 + "," +
                  "\n";
     }
+
+    public float[] toArrayWithoutFirst() {
+        return new float[] {(float)latitude, (float)longitude, lux, accelx, accely, accelz,
+                            zyrox, zyroy, zyroz, (float)decibel, (float)peak, (float)mag1, (float)mag2,
+                            (float)mag3, (float)mag4, (float)mag5, (float)mag6, (float)mag7, (float)mag8,
+                            (float)mag9, (float)mag0, bssidcnt, rssisum, rssi1, rssi2, rssi3, rssi4, rssi5,
+                            rssi6, rssi7, rssi8, rssi9, rssi0, 0
+                            }; // var1 제외
+    }
 }

@@ -26,9 +26,12 @@
         android:name=".Data.MyApp">
 
 
-        <!-- 시작 액티비티: SignInActivity -->
-        <activity
-            android:name=".SignInActivity" />
+        <activity android:name=".SignInActivity" />
+        <activity android:name=".UserInfoActivity" />
+        <activity android:name=".AgreementActivity" />
+        <activity android:name=".OptimizationActivity" />
+        <activity android:name=".MainActivity"/>
+        <activity android:name=".SignInActivity" />
 
         <!-- 순서대로 선언된 나머지 액티비티들 -->
         <activity android:name=".UserInfoActivity" />
@@ -44,6 +47,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".EstimateActivity" />
 
 
     </application>

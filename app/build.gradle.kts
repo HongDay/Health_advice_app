@@ -40,21 +40,23 @@ android {
 }
 
 dependencies {
-    // AndroidX
-    implementation("androidx.core:core-ktx:1.9.0")  // 선택사항이지만 권장
+
+    implementation("androidx.core:core-ktx:1.9.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
 
-    // GraphView (구버전 support-v4/compat 제외)
     implementation("com.jjoe64:graphview:4.2.2") {
         exclude(group = "com.android.support", module = "support-compat")
         exclude(group = "com.android.support", module = "support-v4")
     }
 
-    // Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // 기본 TFLite 인터프리터
+    implementation("org.tensorflow:tensorflow-lite:2.13.0")
+    implementation("org.tensorflow:tensorflow-lite-select-tf-ops:2.13.0")
 }
