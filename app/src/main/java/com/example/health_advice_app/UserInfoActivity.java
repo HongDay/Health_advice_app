@@ -9,6 +9,8 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.health_advice_app.views.WeekTimetableView;
+
 /**
  * UserInfoActivity
  *  - 두 번째 화면: 이름, 생년월일, 학교, 키, 몸무게 입력

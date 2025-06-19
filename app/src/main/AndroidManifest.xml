@@ -22,14 +22,25 @@
         android:label="health_advice_app"
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:name=".Data.MyApp">
+
 
         <activity android:name=".SignInActivity" />
         <activity android:name=".UserInfoActivity" />
         <activity android:name=".AgreementActivity" />
         <activity android:name=".OptimizationActivity" />
+        <activity android:name=".MainActivity"/>
+        <activity android:name=".SignInActivity" />
+
+        <!-- 순서대로 선언된 나머지 액티비티들 -->
+        <activity android:name=".UserInfoActivity" />
+        <activity android:name=".AgreementActivity" />
+        <activity android:name=".OptimizationActivity" />
+
+        <activity android:name=".activities.ReportActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.TimetablePreviewActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,6 +48,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".EstimateActivity" />
+
 
     </application>
 
