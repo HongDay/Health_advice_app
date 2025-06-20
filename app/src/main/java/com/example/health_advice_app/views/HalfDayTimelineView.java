@@ -145,10 +145,12 @@ public class HalfDayTimelineView extends View {
 
                 float top    = (startMin / (float)INTERVAL_MIN) * stepH;
                 float bottom = top + (durMin / (float)INTERVAL_MIN) * stepH;
+                Log.d("ttttt", String.valueOf(top));
+                Log.d("ttttt", String.valueOf(bottom));
 
                 canvas.drawRect(
-                        leftLabelWidth+2, top+2,
-                        w-2,             bottom-2,
+                        leftLabelWidth+2, top,
+                        w-2,             bottom,
                         blockPaint
                 );
 

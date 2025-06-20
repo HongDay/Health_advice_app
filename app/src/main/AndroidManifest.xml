@@ -26,14 +26,7 @@
         android:name=".Data.MyApp">
 
 
-        <activity
-            android:name=".SignInActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".SignInActivity"/>
 
         <activity android:name=".UserInfoActivity" />
         <activity android:name=".AgreementActivity" />
@@ -44,7 +37,14 @@
 
         <activity android:name=".activities.TimetablePreviewActivity"/>
 
-        <activity android:name=".EstimateActivity" />
+        <activity
+            android:name=".EstimateActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
 
     </application>

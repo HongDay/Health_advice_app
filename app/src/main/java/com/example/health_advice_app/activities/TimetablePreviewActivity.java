@@ -35,17 +35,17 @@ public class TimetablePreviewActivity extends AppCompatActivity {
         MyApp app = (MyApp) getApplication();
         List<MyData> events = app.getMyDataList();
 
-        app.calDuration(18000, "Sleep");
-        app.calDuration(18060, "Sleep");
-        app.calDuration(18120, "Sleep");
-        app.calDuration(18180, "Sleep");
-
-        app.calDuration(18240, "Else");
-
-        app.calDuration(48000, "Sleep");
-        app.calDuration(48060, "Sleep");
-        app.calDuration(48120, "Sleep");
-        app.calDuration(48180, "Sleep");
+//        app.calDuration(18000, "Sleep");
+//        app.calDuration(18060, "Sleep");
+//        app.calDuration(18120, "Sleep");
+//        app.calDuration(18180, "Sleep");
+//
+//        app.calDuration(18240, "Other");
+//
+//        app.calDuration(48000, "Sleep");
+//        app.calDuration(48060, "Sleep");
+//        app.calDuration(48120, "Sleep");
+//        app.calDuration(48180, "Sleep");
 
         // 뷰에 이벤트 세팅
         halfView.setEvents(events);

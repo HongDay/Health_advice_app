@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class HalfDayTimelineView2 extends View {
     // 시작 시각: 5시
@@ -126,6 +127,8 @@ public class HalfDayTimelineView2 extends View {
         if (events != null) {
             for (int idx = 0; idx < events.size(); idx++) {
                 MyData d = events.get(idx);
+                if (Objects.equals(d.getContent(), "Other")) continue;
+
                 int startMin = (int)((d.getTimestamp() - 43200) / 60);
                 if (startMin < 0 || startMin > TOTAL_MINUTES) continue;
 
@@ -137,14 +140,11 @@ public class HalfDayTimelineView2 extends View {
                     case "Workout":  blockPaint.setColor(Color.parseColor("#A5D6A7")); break;
                     case "Study":    blockPaint.setColor(Color.parseColor("#F48FB1")); break;
                     case "In Class": blockPaint.setColor(Color.parseColor("#FFE082")); break;
-                    case "Other":    blockPaint.setColor(Color.parseColor("#B0BEC5")); break;
                     default:         blockPaint.setColor(Color.LTGRAY);              break;
                 }
 
                 float top    = (startMin / (float)INTERVAL_MIN) * stepH;
                 float bottom = top + (durMin / (float)INTERVAL_MIN) * stepH;
-
-                Log.d("MyTag", "Value1: " + startMin + ", Value2: " + durMin);
 
                 canvas.drawRect(
                         leftLabelWidth+2, top+2,

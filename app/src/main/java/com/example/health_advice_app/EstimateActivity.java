@@ -23,9 +23,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -51,6 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class EstimateActivity extends AppCompatActivity {
     private ActivityEstimateBinding binding;
@@ -434,6 +437,12 @@ public class EstimateActivity extends AppCompatActivity {
                 sensorViewModel.addData(data);
                 sensorViewModel.plusCount();
 
+                if(sensorViewModel.getCount() == 2){
+                    binding.tvWrong.setVisibility(View.INVISIBLE);
+                    binding.tvWrong2.setVisibility(View.INVISIBLE);
+                    binding.btnModify.setVisibility(View.INVISIBLE);
+                }
+
                 if(sensorViewModel.getCount() == 12){
                     // data preprocessing
                     List<SensorData> drived = sensorViewModel.getDataList();
@@ -476,12 +485,74 @@ public class EstimateActivity extends AppCompatActivity {
 //                        // for WorkOut case
 //                    }
 
+                    String prevActivity = appData.getActivity();
+                    long prevTimestamp = appData.getTimestamp();
+                    // Store data to pass it to next activity
+                    appData.calDuration(seconds-60, activity);
+
                     // display the button (am I wrong?)
                     // pop up the alert window to check if result is really correct
+                    binding.tvWrong.setVisibility(View.VISIBLE);
+                    binding.tvWrong2.setVisibility(View.VISIBLE);
+                    binding.btnModify.setVisibility(View.VISIBLE);
 
-                    // Store data to pass it to next activity
+                    binding.btnModify.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            new android.app.AlertDialog.Builder(EstimateActivity.this)
+                                    .setTitle("Then what were you doing?")
+                                    .setItems(new CharSequence[]{"1. Sleeping", "2. Working out", "3. Studying", "4. In Class", "5. Else"},
+                                            (dialog, which) -> {
+                                                switch (which) {
+                                                    case 0:
+                                                        if (Objects.equals(prevActivity, "Sleep")){
+                                                            appData.removelast();
+                                                            appData.setprev(prevTimestamp, prevActivity);
+                                                            appData.calDuration(seconds-60, "Sleep");
+                                                        }else {appData.calDuration(seconds-60, "Sleep");}
+                                                        Toast.makeText(EstimateActivity.this, "data succesfully modified", Toast.LENGTH_SHORT).show();
+                                                        break;
 
-                    appData.calDuration(seconds-60, activity);
+                                                    case 1:
+                                                        if (Objects.equals(prevActivity, "Work out")){
+                                                            appData.removelast();
+                                                            appData.setprev(prevTimestamp, prevActivity);
+                                                            appData.calDuration(seconds-60, "Work out");
+                                                        }else {appData.calDuration(seconds-60, "Work out");}
+                                                        Toast.makeText(EstimateActivity.this, "data succesfully modified", Toast.LENGTH_SHORT).show();
+                                                        break;
+
+                                                    case 2:
+                                                        if (Objects.equals(prevActivity, "Study")){
+                                                            appData.removelast();
+                                                            appData.setprev(prevTimestamp, prevActivity);
+                                                            appData.calDuration(seconds-60, "Study");
+                                                        }else {appData.calDuration(seconds-60, "Study");}
+                                                        Toast.makeText(EstimateActivity.this, "data succesfully modified", Toast.LENGTH_SHORT).show();
+                                                        break;
+                                                    case 3:
+                                                        if (Objects.equals(prevActivity, "In Class")){
+                                                            appData.removelast();
+                                                            appData.setprev(prevTimestamp, prevActivity);
+                                                            appData.calDuration(seconds-60, "In Class");
+                                                        }else
+                                                            appData.calDuration(seconds-60, "In Class");
+                                                        Toast.makeText(EstimateActivity.this, "data succesfully modified", Toast.LENGTH_SHORT).show();
+                                                        break;
+                                                    case 4:
+                                                        if (Objects.equals(prevActivity, "Other")){
+                                                            appData.removelast();
+                                                            appData.setprev(prevTimestamp, prevActivity);
+                                                            appData.calDuration(seconds-60, "Other");
+                                                        }else
+                                                            appData.calDuration(seconds-60, "Other");
+                                                        Toast.makeText(EstimateActivity.this, "data succesfully modified", Toast.LENGTH_SHORT).show();
+                                                        break;
+                                                }
+                                            })
+                                    .show();
+                        }
+                    });
 
                     sensorViewModel.reset();
                 }
