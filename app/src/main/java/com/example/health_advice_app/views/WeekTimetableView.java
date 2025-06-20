@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,17 +31,19 @@ import java.util.Locale;
 public class WeekTimetableView extends View {
 
     // 7일 × 72행(6:00 AM ~ 12:00 AM, 15분 단위)
-    private static final int DAYS = 7;
-    private static final int ROWS = 72;
+    private static final int DAYS = 5;
+    private static final int ROWS = 40;
 
     // 기본 dp 값
-    private static final float DEFAULT_CELL_DP = 40f;      // 셀 하나 크기
+    private static final float DEFAULT_CELL_DP_X = 50f;      // 셀 하나 크기 가로
+    private static final float DEFAULT_CELL_DP_Y = 30f;      // 셀 하나 크기 세로
     private static final float DEFAULT_LEFT_LABEL_DP = 60f; // 왼쪽 시간 레이블 너비
     private static final float DEFAULT_TOP_LABEL_DP = 40f;  // 위쪽 요일 레이블 높이
 
     private final int leftLabelPx;  // 왼쪽 레이블 너비 (px)
     private final int topLabelPx;   // 위 레이블 높이 (px)
-    private final int cellSizePx;   // 셀 크기 (px)
+    private final int XcellSizePx;   // 셀 크기 (px)
+    private final int YcellSizePx;   // 셀 크기 (px)
 
     private Paint textPaint;        // 레이블 텍스트 그리기용
     private Paint gridPaint;        // 그리드 선용
@@ -79,7 +82,8 @@ public class WeekTimetableView extends View {
         // dp → px 변환
         leftLabelPx = dpToPx(DEFAULT_LEFT_LABEL_DP);
         topLabelPx = dpToPx(DEFAULT_TOP_LABEL_DP);
-        cellSizePx = dpToPx(DEFAULT_CELL_DP);
+        XcellSizePx = dpToPx(DEFAULT_CELL_DP_X);
+        YcellSizePx = dpToPx(DEFAULT_CELL_DP_Y);
         initPaints();
     }
 
@@ -110,8 +114,8 @@ public class WeekTimetableView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // 전체 뷰 크기: (왼쪽 레이블 너비 + 7*셀크기) × (위 레이블 높이 + 72*셀크기)
-        int measuredWidth = leftLabelPx + DAYS * cellSizePx;
-        int measuredHeight = topLabelPx + ROWS * cellSizePx;
+        int measuredWidth = leftLabelPx + DAYS * XcellSizePx;
+        int measuredHeight = topLabelPx + ROWS * YcellSizePx;
         setMeasuredDimension(measuredWidth, measuredHeight);
     }
 
@@ -125,10 +129,10 @@ public class WeekTimetableView extends View {
     }
 
     private void drawDayLabels(Canvas canvas) {
-        String[] days = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-        float halfCell = cellSizePx / 2f;
+        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri"};
+        float halfCell = XcellSizePx / 2f;
         for (int d = 0; d < DAYS; d++) {
-            float cx = leftLabelPx + d * cellSizePx + halfCell;
+            float cx = leftLabelPx + d * XcellSizePx + halfCell;
             Paint.FontMetrics fm = textPaint.getFontMetrics();
             float textHeight = fm.descent - fm.ascent;
             float cy = (topLabelPx / 2f) + (textHeight / 2f) - fm.descent;
@@ -142,7 +146,7 @@ public class WeekTimetableView extends View {
         float textHeight = fm.descent - fm.ascent;
 
         for (int row = 0; row < ROWS; row++) {
-            int totalMinutes = 6 * 60 + row * 15; // 6:00 AM + 15분 단위
+            int totalMinutes = 9 * 60 + row * 15; // 6:00 AM + 15분 단위
             int hour = (totalMinutes / 60) % 24;
             int minute = totalMinutes % 60;
             String ampm = (hour < 12) ? "AM" : "PM";
@@ -150,7 +154,7 @@ public class WeekTimetableView extends View {
             if (hour12 == 0) hour12 = 12;
             String timeLabel = String.format(Locale.getDefault(), "%d:%02d %s", hour12, minute, ampm);
 
-            float cy = topLabelPx + row * cellSizePx + (cellSizePx / 2f)
+            float cy = topLabelPx + row * YcellSizePx + (YcellSizePx * 0.15f)
                     + (textHeight / 2f) - fm.descent;
             canvas.drawText(timeLabel, cx, cy, textPaint);
         }
@@ -159,10 +163,10 @@ public class WeekTimetableView extends View {
     private void drawCells(Canvas canvas) {
         for (int row = 0; row < ROWS; row++) {
             for (int day = 0; day < DAYS; day++) {
-                float left = leftLabelPx + day * cellSizePx;
-                float top = topLabelPx + row * cellSizePx;
-                float right = left + cellSizePx;
-                float bottom = top + cellSizePx;
+                float left = leftLabelPx + day * XcellSizePx;
+                float top = topLabelPx + row * YcellSizePx;
+                float right = left + XcellSizePx;
+                float bottom = top + YcellSizePx;
                 // 기본 배경
                 canvas.drawRect(left, top, right, bottom, cellBgPaint);
                 // 선택된 셀 채우기
@@ -176,13 +180,13 @@ public class WeekTimetableView extends View {
     private void drawGridLines(Canvas canvas) {
         // 가로선
         for (int r = 0; r <= ROWS; r++) {
-            float y = topLabelPx + r * cellSizePx;
-            canvas.drawLine(leftLabelPx, y, leftLabelPx + DAYS * cellSizePx, y, gridPaint);
+            float y = topLabelPx + r * YcellSizePx;
+            canvas.drawLine(leftLabelPx, y, leftLabelPx + DAYS * XcellSizePx, y, gridPaint);
         }
         // 세로선
         for (int d = 0; d <= DAYS; d++) {
-            float x = leftLabelPx + d * cellSizePx;
-            canvas.drawLine(x, topLabelPx, x, topLabelPx + ROWS * cellSizePx, gridPaint);
+            float x = leftLabelPx + d * XcellSizePx;
+            canvas.drawLine(x, topLabelPx, x, topLabelPx + ROWS * XcellSizePx, gridPaint);
         }
     }
 
@@ -194,8 +198,8 @@ public class WeekTimetableView extends View {
         if (x < leftLabelPx || y < topLabelPx) {
             return true;
         }
-        int day = (int) ((x - leftLabelPx) / cellSizePx);
-        int row = (int) ((y - topLabelPx) / cellSizePx);
+        int day = (int) ((x - leftLabelPx) / XcellSizePx);
+        int row = (int) ((y - topLabelPx) / YcellSizePx);
         if (day < 0 || day >= DAYS || row < 0 || row >= ROWS) {
             return true;
         }

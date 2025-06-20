@@ -47,6 +47,7 @@ public class SensorData {
     public int rssi0;
     public long sec;
     public long week;
+    public int inclass;
 
     public SensorData(
             String category,
@@ -61,7 +62,7 @@ public class SensorData {
             int idx6, int idx7, int idx8, int idx9, int idx0,
             int rssi1, int rssi2, int rssi3, int rssi4, int rssi5,
             int rssi6, int rssi7, int rssi8, int rssi9, int rssi0,
-            long sec, long week
+            long sec, long week, int inclass
     ) {
         this.category = category;
         this.latitude = latitude;
@@ -109,6 +110,7 @@ public class SensorData {
         this.rssi0 = rssi0;
         this.sec = sec;
         this.week = week;
+        this.inclass = inclass;
     }
 
     // CSV 한 줄로 변환
@@ -123,16 +125,17 @@ public class SensorData {
                 idx1 + "," + idx2 + "," + idx3 + "," + idx4 + "," + idx5 + "," +
                 idx6 + "," + idx7 + "," + idx8 + "," + idx9 + "," + idx0 + "," +
                 rssi1 + "," + rssi2 + "," + rssi3 + "," + rssi4 + "," + rssi5 + "," +
-                rssi6 + "," + rssi7 + "," + rssi8 + "," + rssi9 + "," + rssi0 + "," +
+                rssi6 + "," + rssi7 + "," + rssi8 + "," + rssi9 + "," + rssi0 + "," + inclass + "," +
                  "\n";
     }
 
+    // extract only usable/useful features (in our case, we have no server, so we removed some features)
     public float[] toArrayWithoutFirst() {
         return new float[] {(float)latitude, (float)longitude, lux, accelx, accely, accelz,
                             zyrox, zyroy, zyroz, (float)decibel, (float)peak, (float)mag1, (float)mag2,
                             (float)mag3, (float)mag4, (float)mag5, (float)mag6, (float)mag7, (float)mag8,
                             (float)mag9, (float)mag0, bssidcnt, rssisum, rssi1, rssi2, rssi3, rssi4, rssi5,
-                            rssi6, rssi7, rssi8, rssi9, rssi0, 0
+                            rssi6, rssi7, rssi8, rssi9, rssi0, inclass
                             }; // var1 제외
     }
 }

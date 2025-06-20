@@ -35,7 +35,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -91,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
     private int[] top10BssidIndex = {0,0,0,0,0,0,0,0,0,0};
     private long seconds;
     private int week;
+    private int inclass = 0;
 
     private int bufferSize;
     private String category = "null";
@@ -418,6 +421,9 @@ public class MainActivity extends AppCompatActivity {
                 + calendar.get(Calendar.MINUTE) * 60L
                 + calendar.get(Calendar.SECOND);
         week = calendar.get(Calendar.DAY_OF_WEEK);
+
+        // 수업정보
+        checkAndRunFromTimetable();
     }
 
     protected void clickSkip(){
@@ -454,7 +460,7 @@ public class MainActivity extends AppCompatActivity {
                             "mag1,mag2,mag3,mag4,mag5,mag6,mag7,mag8,mag9,mag0," +
                             "bssidcnt,rssisum," +
                             "idx1,idx2,idx3,idx4,idx5,idx6,idx7,idx8,idx9,idx0," +
-                            "rssi1,rssi2,rssi3,rssi4,rssi5,rssi6,rssi7,rssi8,rssi9,rssi0," +
+                            "rssi1,rssi2,rssi3,rssi4,rssi5,rssi6,rssi7,rssi8,rssi9,rssi0,inclass," +
                             "\n");
 
                     for (SensorData data : dataList) {
@@ -508,14 +514,15 @@ public class MainActivity extends AppCompatActivity {
                         top10BssidIndex[6], top10BssidIndex[7], top10BssidIndex[8], top10BssidIndex[9],
                         top10Rssi[0], top10Rssi[1], top10Rssi[2], top10Rssi[3], top10Rssi[4],
                         top10Rssi[5], top10Rssi[6], top10Rssi[7], top10Rssi[8], top10Rssi[9],
-                        seconds, week
+                        seconds, week, inclass
                 );
 
                 StringBuilder info = new StringBuilder();
 
                 info.append("\n⏰ 시간 정보\n");
                 info.append("초 = ").append(seconds).append("\n");
-                info.append("요일 = ").append(week).append("\n\n");
+                info.append("요일 = ").append(week).append("\n");
+                info.append("수업중 = ").append(inclass).append("\n\n");
 
                 // 1. 위치 정보
                 info.append("📍 위치 정보\n")
@@ -568,6 +575,54 @@ public class MainActivity extends AppCompatActivity {
 
         handler.postDelayed(measureTask, 5000);
     }
+
+    private void checkAndRunFromTimetable() {
+        try {
+            // CSV 파일 열기
+            File csvFile = new File(getFilesDir(), "timetable.csv");
+            BufferedReader reader = new BufferedReader(new FileReader(csvFile));
+
+            // 오전 9시 = 9 * 3600
+            int baseTimeInSeconds = 9 * 3600;
+            int rowIndex = ((int)seconds - baseTimeInSeconds) / 900;
+
+            // 현재 요일(week = 2~6) → column index = week - 2
+            int columnIndex = week - 2;
+
+            // 유효 시간 범위 / 요일 범위 확인
+            if (rowIndex < 0 || rowIndex >= 40 || columnIndex < 0 || columnIndex >= 5) {
+                inclass = 0;
+                reader.close();
+                return; // 시간 범위 벗어나면 종료
+            }
+
+            // 필요한 row까지 읽기
+            String line = null;
+            for (int i = 0; i <= rowIndex; i++) {
+                line = reader.readLine();
+                if (line == null) {
+                    reader.close();
+                    return; // 파일 끝에 도달
+                }
+            }
+
+            // 해당 줄에서 column 추출
+            String[] cells = line.split(",");
+            if (cells.length > columnIndex && "1".equals(cells[columnIndex].trim())) {
+                // ✅ 해당 시간에 1이라면 이곳에 실행 코드 작성
+                Log.d("Timetable", "✅ 실행 조건 충족: 현재 시간에 1입니다.");
+                inclass = 1;
+            }
+            else {
+                Log.d("Timetable", " 현재 시간에 0입니다!!");
+            }
+            reader.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     protected void onPause() {

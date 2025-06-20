@@ -74,7 +74,6 @@ public class UserInfoActivity extends AppCompatActivity {
             weekTimetableView.exportToCsv(UserInfoActivity.this);
             Intent intent = new Intent(UserInfoActivity.this, com.example.health_advice_app.AgreementActivity.class);
             startActivity(intent);
-            finish();
         });
 
         // 최초 실행 시에는 버튼 비활성화 상태로 시작

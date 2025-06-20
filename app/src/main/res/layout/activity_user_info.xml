@@ -144,6 +144,7 @@
             android:textSize="18sp"
             android:textColor="@color/colorPrimaryDark"
             android:fontFamily="sans-serif-medium"
+            android:gravity="center"
             tools:ignore="HardcodedText"/>
 
         <!-- 전체 시간표: 가로/세로 스크롤 가능 -->
@@ -164,7 +165,9 @@
                 <com.example.health_advice_app.views.WeekTimetableView
                     android:id="@+id/weekTimetableView"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="20dp"/>
             </ScrollView>
         </HorizontalScrollView>
 

@@ -1,5 +1,6 @@
 package com.example.health_advice_app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -44,7 +45,8 @@ public class OptimizationActivity extends AppCompatActivity {
 
         btnOptContinue.setOnClickListener(v -> {
             // 최종 완료 후 단순 종료
-            finish();
+            Intent intent = new Intent(OptimizationActivity.this, com.example.health_advice_app.MainActivity.class);
+            startActivity(intent);
         });
     }
 }
