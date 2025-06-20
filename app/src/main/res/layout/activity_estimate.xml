@@ -57,9 +57,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="You're now .."
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:textStyle="bold"
-        android:textSize="30dp"
+        android:textSize="40dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ll_opt_topbar"/>
@@ -70,6 +70,7 @@
         android:layout_height="wrap_content"
         android:text="Scanning .. .."
         android:layout_marginTop="10dp"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_scanstart"/>
@@ -78,13 +79,16 @@
         android:id="@+id/logLocation"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="10dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="10dp"
         android:background="#EEEEEE"
         android:elevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_log"
-        app:layout_constraintBottom_toTopOf="@id/btn_getreport"
+        app:layout_constraintTop_toBottomOf="@id/btn_scanstart"
+        app:layout_constraintBottom_toTopOf="@id/logZyro"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toStartOf="@id/logLight"
+        app:layout_constraintDimensionRatio="1:1">
 
         <TextView
             android:id="@+id/IconLocation"
@@ -128,13 +132,16 @@
         android:id="@+id/logLight"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="10dp"
         android:background="#EEEEEE"
         android:elevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_log"
-        app:layout_constraintBottom_toTopOf="@id/btn_getreport"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_marginTop="80dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintTop_toBottomOf="@id/btn_scanstart"
+        app:layout_constraintBottom_toTopOf="@id/logAudio"
+        app:layout_constraintStart_toEndOf="@id/logLocation"
+        app:layout_constraintEnd_toStartOf="@id/logAccel"
+        app:layout_constraintDimensionRatio="1:1">
 
         <TextView
             android:id="@+id/IconLight"
@@ -173,6 +180,227 @@
             app:layout_constraintTop_toBottomOf="@id/titleLight"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/logAccel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="#EEEEEE"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/btn_scanstart"
+        app:layout_constraintBottom_toTopOf="@id/logWifi"
+        app:layout_constraintStart_toEndOf="@id/logLight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1:1">
+
+        <TextView
+            android:id="@+id/IconAccel"
+            android:text="📈"
+            android:textSize="30sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/titleAccel"
+            android:text="Accelorater"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/IconAccel"/>
+
+        <TextView
+            android:id="@+id/txtAccel"
+            android:text="log"
+            android:textSize="15sp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleAccel"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/logZyro"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="10dp"
+        android:background="#EEEEEE"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/logLocation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/logAudio"
+        app:layout_constraintDimensionRatio="1:1">
+
+        <TextView
+            android:id="@+id/IconZyro"
+            android:text="🌀"
+            android:textSize="30sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/titleZyro"
+            android:text="Gyrometer"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/IconZyro"/>
+
+        <TextView
+            android:id="@+id/txtZyro"
+            android:text="log"
+            android:textSize="15sp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleZyro"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/logAudio"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="#EEEEEE"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/logLight"
+        app:layout_constraintStart_toEndOf="@id/logZyro"
+        app:layout_constraintEnd_toStartOf="@id/logWifi"
+        app:layout_constraintDimensionRatio="1:1">
+
+        <TextView
+            android:id="@+id/IconAudio"
+            android:text="🔊"
+            android:textSize="30sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/titleAudio"
+            android:text="Audio"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/IconAudio"/>
+
+        <TextView
+            android:id="@+id/txtAudio"
+            android:text="log"
+            android:textSize="15sp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleAudio"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/logWifi"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="#EEEEEE"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/logAccel"
+        app:layout_constraintStart_toEndOf="@id/logAudio"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1:1">
+
+        <TextView
+            android:id="@+id/IconWifi"
+            android:text="🛜"
+            android:textSize="30sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/titleWifi"
+            android:text="Wi-Fi info"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/IconWifi"/>
+
+        <TextView
+            android:id="@+id/txtWifi"
+            android:text="log"
+            android:textSize="15sp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleWifi"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tv_inclass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="15sp"
+        android:textColor="#0000FF"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintStart_toStartOf="@id/logLocation"
+        app:layout_constraintBottom_toTopOf="@id/logLocation" />
 
     <Button
         android:id="@+id/btn_timetablechk"

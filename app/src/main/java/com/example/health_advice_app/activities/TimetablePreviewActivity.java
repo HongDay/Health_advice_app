@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.health_advice_app.Data.MyApp;
 import com.example.health_advice_app.Data.MyData;
+import com.example.health_advice_app.EstimateActivity;
 import com.example.health_advice_app.R;
 import com.example.health_advice_app.views.HalfDayTimelineView;
 import com.example.health_advice_app.views.HalfDayTimelineView2;
@@ -53,7 +54,7 @@ public class TimetablePreviewActivity extends AppCompatActivity {
         // OK 누르면 ReportActivity 로 이동
         btnOk.setOnClickListener(v -> {
             // 실제 앱에선 app.setMyDataList(events) 로 유지할 수도 있고…
-            startActivity(new Intent(this, ReportActivity.class));
+            startActivity(new Intent(this, EstimateActivity.class));
         });
     }
 }

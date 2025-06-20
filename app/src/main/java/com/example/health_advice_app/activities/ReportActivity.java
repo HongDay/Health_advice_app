@@ -1,5 +1,6 @@
 package com.example.health_advice_app.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.health_advice_app.Data.MyApp;
 import com.example.health_advice_app.Data.MyData;
+import com.example.health_advice_app.EstimateActivity;
 import com.example.health_advice_app.R;
 import com.example.health_advice_app.databinding.ActivityReportBinding;
 import com.example.health_advice_app.databinding.ItemCardBinding;
@@ -178,8 +180,16 @@ public class ReportActivity extends AppCompatActivity {
         }
 
 
-        // 7) 아래 OK 버튼 → 종료
-        Button btnOk = findViewById(R.id.btnOkReport);
-        btnOk.setOnClickListener(v -> finish());
+        clickOKbtn();
+    }
+
+    protected void clickOKbtn() {
+        binding.btnOkReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ReportActivity.this, EstimateActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

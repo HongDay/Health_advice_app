@@ -38,6 +38,8 @@ import com.example.health_advice_app.Data.FFT;
 import com.example.health_advice_app.Data.MyApp;
 import com.example.health_advice_app.Data.SensorData;
 import com.example.health_advice_app.Data.SensorViewModel;
+import com.example.health_advice_app.activities.ReportActivity;
+import com.example.health_advice_app.activities.TimetablePreviewActivity;
 import com.example.health_advice_app.databinding.ActivityEstimateBinding;
 
 import java.io.BufferedReader;
@@ -65,6 +67,7 @@ public class EstimateActivity extends AppCompatActivity {
     private Handler scanHandler;
     // 클래스 멤버로 선언
     private Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable measureTask;
 
     private Runnable scanRunnable;
     private boolean isScanRequested = false;
@@ -177,12 +180,35 @@ public class EstimateActivity extends AppCompatActivity {
 
         setting();
         clickScan();
+        clickTimetable();
+        clickReport();
+    }
+
+    protected void clickTimetable() {
+        binding.btnTimetablechk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EstimateActivity.this, TimetablePreviewActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    protected void clickReport() {
+        binding.btnGetreport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EstimateActivity.this, ReportActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     protected void clickScan() {
         binding.btnScanstart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                binding.tvLog.setVisibility(View.VISIBLE);
                 startRepeatMeasure();
             }
         });
@@ -334,50 +360,45 @@ public class EstimateActivity extends AppCompatActivity {
 
     protected void logprint() {
         StringBuilder info = new StringBuilder();
+        info.append("In class time = ").append(inclass);
+        binding.tvInclass.setText(info.toString());
 
-        info.append("\n 시각, 요일 정보\n");
-        info.append("초 = ").append(seconds).append("\n");
-        info.append("요일 = ").append(week).append("\n");
-        info.append("수업중 = ").append(inclass).append("\n\n");
+        info = new StringBuilder();
+        info.append("latitude: ").append(latitude).append("\n")
+                .append("longitude: ").append(longitude);
+        binding.txtLocation.setText(info.toString());
 
-        // 1. 위치 정보
-        info.append("📍 위치 정보\n")
-                .append("위도: ").append(latitude).append("\n")
-                .append("경도: ").append(longitude).append("\n\n");
+        info = new StringBuilder();
+        info.append("Lux: ").append(lux).append(" lx");
+        binding.txtLight.setText(info.toString());
 
-        // 2. 조도 센서
-        info.append("💡 조도 센서\n")
-                .append("조도: ").append(lux).append(" lx\n\n");
-
-        // 3. 가속도 센서
-        info.append("📈 가속도계\n")
-                .append("x: ").append(accel[0]).append("\n")
+        info = new StringBuilder();
+        info.append("x: ").append(accel[0]).append("\n")
                 .append("y: ").append(accel[1]).append("\n")
-                .append("z: ").append(accel[2]).append("\n\n");
+                .append("z: ").append(accel[2]);
+        binding.txtAccel.setText(info.toString());
 
-        // 4. 자이로 센서
-        info.append("🌀 자이로 센서\n")
-                .append("x: ").append(gyro[0]).append("\n")
+        info = new StringBuilder();
+        info.append("x: ").append(gyro[0]).append("\n")
                 .append("y: ").append(gyro[1]).append("\n")
-                .append("z: ").append(gyro[2]).append("\n\n");
+                .append("z: ").append(gyro[2]);
+        binding.txtZyro.setText(info.toString());
 
-        // 5. 오디오 정보
-        info.append("🔊 오디오 정보\n")
-                .append("데시벨: ").append(String.format(Locale.US, "%.2f", decibel)).append(" dB\n")
-                .append("최대 진폭: ").append(String.format(Locale.US, "%.2f", peak)).append("\n\n");
+        info = new StringBuilder();
+        info.append("Decibel: ").append(String.format(Locale.US, "%.2f", decibel)).append(" dB\n")
+                .append("Max amp: ").append(String.format(Locale.US, "%.2f", peak));
+        binding.txtAudio.setText(info.toString());
 
-        info.append("\n🛜 WIFI 정보\n");
+        info = new StringBuilder();
         info.append("BSSID count = ").append(bssidCnt).append("\n");
-        info.append("RSSI sum = ").append(rssiSum).append("\n");
-
-        // TextView에 설정
-        binding.tvLog.setText(info.toString());
+        info.append("RSSI sum = ").append(rssiSum);
+        binding.txtWifi.setText(info.toString());
     }
 
     private void startRepeatMeasure() {
         startMeasurement();
 
-        Runnable measureTask = new Runnable() {
+        measureTask = new Runnable() {
             @Override
             public void run() {
                 double[] bands = new double[10];
@@ -465,6 +486,8 @@ public class EstimateActivity extends AppCompatActivity {
                     sensorViewModel.reset();
                 }
 
+                binding.tvLog.setText(String.format("scanning .. ..  (%d/12)", sensorViewModel.getCount()));
+
                 startMeasurement();
                 logprint();
                 handler.postDelayed(this, 5000);
@@ -519,6 +542,19 @@ public class EstimateActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (handler != null && measureTask != null){
+            handler.removeCallbacks(measureTask);
+        }
+
+        if (scanHandler != null && scanRunnable != null){
+            scanHandler.removeCallbacks(scanRunnable);
         }
     }
 
