@@ -2,6 +2,7 @@ package com.example.health_advice_app;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -15,6 +16,7 @@ import android.location.LocationManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -28,8 +30,10 @@ import android.util.Log;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -151,6 +155,8 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        // Optimize 버튼은 처음에 숨김
+        binding.button.setVisibility(View.GONE);
 
         sensorViewModel = new ViewModelProvider(this).get(SensorViewModel.class);
 
@@ -181,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 binding.tvWhat.setText("OK! You are Studying!");
                 category = "study";
+                binding.button.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -191,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 binding.tvWhat.setText("OK! You are Exercising!");
                 category = "exercise";
+                binding.button.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -201,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 binding.tvWhat.setText("OK! You are In Class!");
                 category = "class";
+                binding.button.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -211,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 binding.tvWhat.setText("OK! You are Sleeping!");
                 category = "sleep";
+                binding.button.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -221,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 binding.tvWhat.setText("OK! You are doing something else!");
                 category = "else";
+                binding.button.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -446,35 +457,64 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    protected void clickEmail(){
+    protected void clickEmail() {
         binding.email.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<SensorData> dataList = sensorViewModel.getDataList();  // ViewModel에서 데이터 가져옴
-
+                // 1) ViewModel에서 데이터 가져와 CSV 파일로 저장
+                List<SensorData> dataList = sensorViewModel.getDataList();
                 File csvFile = new File(getExternalFilesDir(null), "sensor_data.csv");
 
                 try (FileWriter writer = new FileWriter(csvFile)) {
-
-                    writer.write("category,sec,week,latitude,longitude,lux,accelx,accely,accelz,gyroX,gyroY,gyroZ,decibel,peak," +
-                            "mag1,mag2,mag3,mag4,mag5,mag6,mag7,mag8,mag9,mag0," +
-                            "bssidcnt,rssisum," +
-                            "idx1,idx2,idx3,idx4,idx5,idx6,idx7,idx8,idx9,idx0," +
-                            "rssi1,rssi2,rssi3,rssi4,rssi5,rssi6,rssi7,rssi8,rssi9,rssi0,inclass," +
-                            "\n");
-
+                    writer.write("category,sec,week,latitude,longitude,lux,accelx,accely,accelz,"
+                            + "gyroX,gyroY,gyroZ,decibel,peak,"
+                            + "mag1,mag2,mag3,mag4,mag5,mag6,mag7,mag8,mag9,mag0,"
+                            + "bssidcnt,rssisum,"
+                            + "idx1,idx2,idx3,idx4,idx5,idx6,idx7,idx8,idx9,idx0,"
+                            + "rssi1,rssi2,rssi3,rssi4,rssi5,rssi6,rssi7,rssi8,rssi9,rssi0,inclass\n");
                     for (SensorData data : dataList) {
                         writer.write(data.toCsvLine());
                     }
-
                     writer.flush();
-
-                    Toast.makeText(getApplicationContext(), "CSV 파일 저장 완료:\n" + csvFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
-
+                    Toast.makeText(getApplicationContext(),
+                            "CSV 파일 저장 완료:\n" + csvFile.getAbsolutePath(),
+                            Toast.LENGTH_LONG).show();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "CSV 저장 실패: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),
+                            "CSV 저장 실패: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                    return;
                 }
+
+                // 2) 서버 unavailable 안내 다이얼로그
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Server Unavailable")
+                        .setMessage("The server is currently unavailable.\nWill you send data to the developer?")
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // 3) 이메일 인텐트로 CSV 첨부
+                                Uri uri = FileProvider.getUriForFile(
+                                        MainActivity.this,
+                                        BuildConfig.APPLICATION_ID + ".provider",
+                                        csvFile);
+
+                                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                                emailIntent.setType("text/csv");
+                                emailIntent.putExtra(Intent.EXTRA_EMAIL,
+                                        new String[]{"sirusister624@unist.ac.kr"});
+                                emailIntent.putExtra(Intent.EXTRA_SUBJECT,
+                                        "Sensor Data CSV 파일");
+                                emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                                emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                                startActivity(Intent.createChooser(
+                                        emailIntent, "이메일 앱 선택"));
+                            }
+                        })
+                        .setNegativeButton("취소", null)
+                        .show();
             }
         });
     }
