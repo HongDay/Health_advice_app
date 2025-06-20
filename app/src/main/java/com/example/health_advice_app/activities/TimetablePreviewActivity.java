@@ -10,6 +10,7 @@ import com.example.health_advice_app.Data.MyApp;
 import com.example.health_advice_app.Data.MyData;
 import com.example.health_advice_app.R;
 import com.example.health_advice_app.views.HalfDayTimelineView;
+import com.example.health_advice_app.views.HalfDayTimelineView2;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,6 +19,7 @@ import java.util.List;
 public class TimetablePreviewActivity extends AppCompatActivity {
 
     private HalfDayTimelineView halfView;
+    private HalfDayTimelineView2 halfView2;
     private Button             btnOk;
 
     @Override
@@ -26,47 +28,27 @@ public class TimetablePreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_timetable_preview);
 
         halfView = findViewById(R.id.halfDayTimelineView);
+        halfView2 = findViewById(R.id.halfDayTimelineView2);
         btnOk    = findViewById(R.id.btnOk);
 
         MyApp app = (MyApp) getApplication();
         List<MyData> events = app.getMyDataList();
 
-        // ▶ 빈 리스트면 더미 데이터 생성
-        if (events == null || events.isEmpty()) {
-            events = new ArrayList<>();
-            Calendar c = Calendar.getInstance();
-            c.set(Calendar.SECOND, 0);
-            c.set(Calendar.MILLISECOND, 0);
+        app.calDuration(18000, "Sleep");
+        app.calDuration(18060, "Sleep");
+        app.calDuration(18120, "Sleep");
+        app.calDuration(18180, "Sleep");
 
-            // base: 오늘 5시 0분
-            c.set(Calendar.HOUR_OF_DAY, 5);
-            c.set(Calendar.MINUTE, 0);
-            long t5 = c.getTimeInMillis();
+        app.calDuration(18240, "Else");
 
-            // 5:00 ~ 8:30 Sleep (210분)
-            events.add(new MyData(t5, 210, "Sleep"));
-
-            // 9:00 ~ 10:15 In Class (75분)
-            c.set(Calendar.HOUR_OF_DAY, 9);
-            c.set(Calendar.MINUTE, 0);
-            long t9 = c.getTimeInMillis();
-            events.add(new MyData(t9, 75, "In Class"));
-
-            // 10:30 ~ 12:00 Study (90분)
-            c.set(Calendar.HOUR_OF_DAY, 10);
-            c.set(Calendar.MINUTE, 30);
-            long t1030 = c.getTimeInMillis();
-            events.add(new MyData(t1030, 90, "Study"));
-
-            // 12:30 ~ 13:00 Workout (30분)
-            c.set(Calendar.HOUR_OF_DAY, 12);
-            c.set(Calendar.MINUTE, 30);
-            long t1230 = c.getTimeInMillis();
-            events.add(new MyData(t1230, 30, "Workout"));
-        }
+        app.calDuration(48000, "Sleep");
+        app.calDuration(48060, "Sleep");
+        app.calDuration(48120, "Sleep");
+        app.calDuration(48180, "Sleep");
 
         // 뷰에 이벤트 세팅
         halfView.setEvents(events);
+        halfView2.setEvents(events);
 
         // OK 누르면 ReportActivity 로 이동
         btnOk.setOnClickListener(v -> {

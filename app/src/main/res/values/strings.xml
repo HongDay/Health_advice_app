@@ -35,4 +35,23 @@
     <string name="preview_title">Check if your log is correct</string>
     <string name="before_report">Before the report</string>
     <string name="your_daily_report">Your Daily Report</string>
+
+
+    <string name="Sleep_txt1">Your sleep time is far too short! \nThis poses a risk to your health. \nOut of the recommended 7 hours of sleep, \n you didn’t even get 4 hours.</string>
+    <string name="Sleep_txt2">Your sleep time is still little short! \n Out of the recommended 7 hours of sleep, \n you slept only 4~6 hours. \n for your health, sleep more.</string>
+    <string name="Sleep_txt3">Your sleep time is sufficient! \nMaintaining this sleep time, \nYou can be healthy.</string>
+
+    <string name="Study_txt1">You studied too little. \nYou didn\'t meet the college student average of 5 hours. \nPlease study more according to your goal.</string>
+    <string name="Study_txt2">You\'re almost there! \nJust a bit more studying and you\'ll reach your target. \nKeep going!</string>
+    <string name="Study_txt3">Great job! \nYou\'ve studied enough to meet both your goal and the college student average.</string>
+
+    <string name="Class_txt1">You missed many classes during the scheduled times. \nPlease focus on your studies and attend all your classes.</string>
+    <string name="Class_txt2">It seems you missed a small portion of your classes. \nMake sure to attend every class.</string>
+    <string name="Class_txt3">Well done! \nYou attended all your classes diligently.</string>
+
+    <string name="Work_txt1">You barely exercised today. \nTo meet the recommended daily amount for adults, \nyou need at least one more hour. \nPlease exercise more for your health.</string>
+    <string name="Work_txt2">You\'re slightly below the recommended amount of exercise. \nJust a bit more to go! \nTry to reach the daily goal for your health.</string>
+    <string name="Work_txt3">Great job! \nYou\'ve completed the full recommended amount of exercise for adults.</string>
+
+
 </resources>

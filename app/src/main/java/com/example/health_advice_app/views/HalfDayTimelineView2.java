@@ -12,14 +12,14 @@ import android.view.View;
 import com.example.health_advice_app.Data.MyData;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Calendar;
 
-public class HalfDayTimelineView extends View {
+public class HalfDayTimelineView2 extends View {
     // 시작 시각: 5시
-    private static final int START_HOUR = 0;
+    private static final int START_HOUR = 12;
     // 몇 시간치 표시할지 (5시→13시 = 8시간)
     private static final int VISIBLE_HOURS = 12;
     private static final int TOTAL_MINUTES = VISIBLE_HOURS * 60;
@@ -35,15 +35,15 @@ public class HalfDayTimelineView extends View {
     private Paint blockPaint;
     private float leftLabelWidth;
 
-    public HalfDayTimelineView(Context context) {
+    public HalfDayTimelineView2(Context context) {
         super(context);
         init(context);
     }
-    public HalfDayTimelineView(Context context, AttributeSet attrs) {
+    public HalfDayTimelineView2(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
-    public HalfDayTimelineView(Context context, AttributeSet attrs, int defStyle) {
+    public HalfDayTimelineView2(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context);
     }
@@ -126,7 +126,7 @@ public class HalfDayTimelineView extends View {
         if (events != null) {
             for (int idx = 0; idx < events.size(); idx++) {
                 MyData d = events.get(idx);
-                int startMin = (int)(d.getTimestamp() / 60);
+                int startMin = (int)((d.getTimestamp() - 43200) / 60);
                 if (startMin < 0 || startMin > TOTAL_MINUTES) continue;
 
                 int durMin = d.getDurationMinutes();

@@ -35,6 +35,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.health_advice_app.Data.FFT;
+import com.example.health_advice_app.Data.MyApp;
 import com.example.health_advice_app.Data.SensorData;
 import com.example.health_advice_app.Data.SensorViewModel;
 import com.example.health_advice_app.databinding.ActivityEstimateBinding;
@@ -49,6 +50,7 @@ import java.util.Map;
 public class EstimateActivity extends AppCompatActivity {
     private ActivityEstimateBinding binding;
     private SensorViewModel sensorViewModel;
+    private MyApp appData;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private AudioRecord audioRecord;
@@ -156,6 +158,8 @@ public class EstimateActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         sensorViewModel = new ViewModelProvider(this).get(SensorViewModel.class);
+
+        appData = (MyApp) getApplication();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -421,11 +425,26 @@ public class EstimateActivity extends AppCompatActivity {
                     // model training
                     TFLiteModel model = new TFLiteModel(EstimateActivity.this);
                     int result = model.predict(input);
+                    String activity = "";
 
-                    if (result == 0) binding.tvGuess.setText("In class !!" + seconds);
-                    else if (result == 1) binding.tvGuess.setText("Doing Something Else !!" + seconds);
-                    else if (result == 2) binding.tvGuess.setText("Sleeping !!" + seconds);
-                    else if (result == 3) binding.tvGuess.setText("Studying !!" + seconds);
+                    if (result == 0) {
+                        binding.tvGuess.setText("In class !!" + seconds);
+                        activity = "In Class";
+                    }
+                    else if (result == 1) {
+                        binding.tvGuess.setText("Doing Something Else !!" + seconds);
+                        activity = "Other";
+                    }
+                    else if (result == 2) {
+                        binding.tvGuess.setText("Sleeping !!" + seconds);
+                        activity = "Sleep";
+                    }
+                    else if (result == 3) {
+                        binding.tvGuess.setText("Studying !!" + seconds);
+                        activity = "Study";
+                    }
+
+                    appData.calDuration(seconds-60, "Study");
 
                     // display the button (am I wrong?)
                     // pop up the alert window to check if result is really correct

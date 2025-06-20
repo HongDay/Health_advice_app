@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    android:elevation="4dp"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding = "16dp">
+
+        <!-- 제목 -->
+        <TextView
+            android:id="@+id/titleText"
+            android:text="Sleep"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"/>
+
+        <!-- 색상 원 + 텍스트 -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical">
+
+            <View
+                android:id="@+id/colorDot"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/circle_yellow"/>
+
+            <TextView
+                android:id="@+id/qualityText"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Still Not Enough"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <!-- 막대 그래프 (FrameLayout) -->
+        <FrameLayout
+            android:id="@+id/graphContainer"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginVertical="12dp"
+            android:background="#D3D3D3">
+
+            <View
+                android:id="@+id/progressBar"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="#4285F4"/>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tv_explain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

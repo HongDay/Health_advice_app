@@ -1,13 +1,18 @@
 package com.example.health_advice_app.activities;
 
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.health_advice_app.Data.MyApp;
 import com.example.health_advice_app.Data.MyData;
 import com.example.health_advice_app.R;
+import com.example.health_advice_app.databinding.ActivityReportBinding;
+import com.example.health_advice_app.databinding.ItemCardBinding;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
@@ -20,89 +25,158 @@ import java.util.Map;
 
 public class ReportActivity extends AppCompatActivity {
 
+    private ActivityReportBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_report);
+        binding = ActivityReportBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        // 1) 저장된 MyData 꺼내오기
+        // 저장된 MyData 꺼내오기
         MyApp app = (MyApp) getApplication();
         List<MyData> dataList = new ArrayList<>(app.getMyDataList());
 
-        // 2) 비어 있으면 테스트용 더미 데이터 생성
-        if (dataList.isEmpty()) {
-            long todayStart = System.currentTimeMillis() - (System.currentTimeMillis() % (24 * 3600_000L));
-            // 05:00 ~ 08:30 (3.5h = 210m)
-            dataList.add(new MyData(
-                    todayStart + 5 * 3600_000L,
-                    210,
-                    "Sleep"
-            ));
-            // 09:00 ~ 10:15 (1.25h = 75m)
-            dataList.add(new MyData(
-                    todayStart + 9 * 3600_000L,
-                    75,
-                    "In Class"
-            ));
-            // 10:30 ~ 12:00 (1.5h = 90m)
-            dataList.add(new MyData(
-                    todayStart + 10 * 3600_000L + 30 * 60_000L,
-                    90,
-                    "Study"
-            ));
-            // 12:30 ~ 13:00 (0.5h = 30m)
-            dataList.add(new MyData(
-                    todayStart + 12 * 3600_000L + 30 * 60_000L,
-                    30,
-                    "Workout"
-            ));
+        // Sleep 리포트 화면 구성
+        binding.cardSleep.titleText.setText("Sleep");
+        float standardSleep = 7 * 60; // 7시간
+        // 총 숙면시간 계산
+        float totalSleep = 0;
+        for (MyData data : dataList) {
+            if("Sleep".equals(data.getContent())){
+                totalSleep += data.getDurationMinutes();
+            }
+        }
+        float finalTotalSleep = totalSleep;
+        binding.cardSleep.graphContainer.post(() -> {
+            int containerWidth = binding.cardSleep.graphContainer.getWidth();
+            float ratio = finalTotalSleep / standardSleep;
+            int progressWidth = (int)(containerWidth * ratio);
+
+            ViewGroup.LayoutParams params = binding.cardSleep.progressBar.getLayoutParams();
+            params.width = progressWidth;
+            binding.cardSleep.progressBar.setLayoutParams(params);
+        });
+        // 기준에 맞춘 조언 메세지
+        if (totalSleep < 0.6 * standardSleep) {
+            binding.cardSleep.tvExplain.setText(getString(R.string.Sleep_txt1));
+            binding.cardSleep.colorDot.setBackground(ContextCompat.getDrawable(this, R.drawable.circle_red));
+            binding.cardSleep.qualityText.setText("Too Lack");
+        } else if (totalSleep < 0.9 * standardSleep) {
+            binding.cardSleep.tvExplain.setText(getString(R.string.Sleep_txt2));
+            binding.cardSleep.colorDot.setBackground(ContextCompat.getDrawable(this, R.drawable.circle_yellow));
+            binding.cardSleep.qualityText.setText("Still Not Enough");
+        } else{
+            binding.cardSleep.tvExplain.setText(getString(R.string.Sleep_txt3));
+            binding.cardSleep.colorDot.setBackground(ContextCompat.getDrawable(this, R.drawable.circle_green));
+            binding.cardSleep.qualityText.setText("Enough");
         }
 
-        // 3) 활동별 총 분 집계
-        Map<String, Integer> sumsMin = new HashMap<>();
-        for (MyData d : dataList) {
-            sumsMin.put(
-                    d.getContent(),
-                    sumsMin.getOrDefault(d.getContent(), 0) + d.getDurationMinutes()
-            );
+        // Study 리포트 화면 구성
+        binding.cardStudy.titleText.setText("Study");
+        float standardStudy = 4 * 60; // 4시간
+        // 총 숙면시간 계산
+        float totalStudy = 0;
+        for (MyData data : dataList) {
+            if("Study".equals(data.getContent())){
+                totalStudy += data.getDurationMinutes();
+            }
+        }
+        float finalTotalStudy = totalStudy;
+        binding.cardStudy.graphContainer.post(() -> {
+            int containerWidth = binding.cardStudy.graphContainer.getWidth();
+            float ratio = finalTotalStudy / standardStudy;
+            int progressWidth = (int)(containerWidth * ratio);
+
+            ViewGroup.LayoutParams params = binding.cardStudy.progressBar.getLayoutParams();
+            params.width = progressWidth;
+            binding.cardStudy.progressBar.setLayoutParams(params);
+        });
+        // 기준에 맞춘 조언 메세지
+        if (totalStudy < 0.6 * standardStudy) {
+            binding.cardStudy.tvExplain.setText(getString(R.string.Study_txt1));
+            binding.cardStudy.colorDot.setBackground(ContextCompat.getDrawable(this, R.drawable.circle_red));
+            binding.cardStudy.qualityText.setText("Too Lack");
+        } else if (totalStudy < 0.9 * standardStudy) {
+            binding.cardStudy.tvExplain.setText(getString(R.string.Study_txt2));
+            binding.cardStudy.colorDot.setBackground(ContextCompat.getDrawable(this, R.drawable.circle_yellow));
+            binding.cardStudy.qualityText.setText("Still Not Enough");
+        } else{
+            binding.cardStudy.tvExplain.setText(getString(R.string.Study_txt3));
+            binding.cardStudy.colorDot.setBackground(ContextCompat.getDrawable(this, R.drawable.circle_green));
+            binding.cardStudy.qualityText.setText("Enough");
         }
 
-        // 4) DataPoint[] 로 변환 (Y 값은 “시간” 단위로)
-        String[] labels = sumsMin.keySet().toArray(new String[0]);
-        DataPoint[] userPoints = new DataPoint[labels.length];
-        for (int i = 0; i < labels.length; i++) {
-            double hours = sumsMin.get(labels[i]) / 60.0;  // 분 → 시간
-            userPoints[i] = new DataPoint(i, hours);
+        // WorkOut 리포트 화면 구성
+        binding.cardWorkout.titleText.setText("WorkOut");
+        float standardWork = 90; // 1시간 30분
+        // 총 운동시간 계산
+        float totalWork = 0;
+        for (MyData data : dataList) {
+            if("Workout".equals(data.getContent())){
+                totalWork += data.getDurationMinutes();
+            }
+        }
+        float finalTotalWork = totalWork;
+        binding.cardWorkout.graphContainer.post(() -> {
+            int containerWidth = binding.cardWorkout.graphContainer.getWidth();
+            float ratio = finalTotalWork / standardWork;
+            int progressWidth = (int)(containerWidth * ratio);
+
+            ViewGroup.LayoutParams params = binding.cardWorkout.progressBar.getLayoutParams();
+            params.width = progressWidth;
+            binding.cardWorkout.progressBar.setLayoutParams(params);
+        });
+        // 기준에 맞춘 조언 메세지
+        if (totalWork < 0.6 * standardWork) {
+            binding.cardWorkout.tvExplain.setText(getString(R.string.Work_txt1));
+            binding.cardWorkout.colorDot.setBackground(ContextCompat.getDrawable(this, R.drawable.circle_red));
+            binding.cardWorkout.qualityText.setText("Too Lack");
+        } else if (totalWork < 0.85 * standardWork) {
+            binding.cardWorkout.tvExplain.setText(getString(R.string.Work_txt2));
+            binding.cardWorkout.colorDot.setBackground(ContextCompat.getDrawable(this, R.drawable.circle_yellow));
+            binding.cardWorkout.qualityText.setText("Still Not Enough");
+        } else{
+            binding.cardWorkout.tvExplain.setText(getString(R.string.Work_txt3));
+            binding.cardWorkout.colorDot.setBackground(ContextCompat.getDrawable(this, R.drawable.circle_green));
+            binding.cardWorkout.qualityText.setText("Enough");
         }
 
-        BarGraphSeries<DataPoint> userSeries = new BarGraphSeries<>(userPoints);
-        userSeries.setColor(getColor(R.color.purple_200));
-        userSeries.setTitle("You");
-
-        // 5) 평균 더미 (시간 단위)
-        double[] avgH = {150/60.0, 210/60.0, 75/60.0, 30/60.0};
-        DataPoint[] avgPoints = new DataPoint[labels.length];
-        for (int i = 0; i < labels.length; i++) {
-            avgPoints[i] = new DataPoint(i, avgH[i % avgH.length]);
+        // Class 리포트 화면 구성
+        binding.cardClass.titleText.setText("Class");
+        float standardClass = 180; // 3시간. 임의 설정.
+        // 총 운동시간 계산
+        float totalClass = 0;
+        for (MyData data : dataList) {
+            if("In Class".equals(data.getContent())){
+                totalClass += data.getDurationMinutes();
+            }
         }
-        BarGraphSeries<DataPoint> avgSeries = new BarGraphSeries<>(avgPoints);
-        avgSeries.setColor(getColor(R.color.teal_200));
-        avgSeries.setTitle("20s Univ. Avg");
+        float finalTotalClass = totalClass;
+        binding.cardClass.graphContainer.post(() -> {
+            int containerWidth = binding.cardClass.graphContainer.getWidth();
+            float ratio = finalTotalClass / standardClass;
+            int progressWidth = (int)(containerWidth * ratio);
 
-        // 6) 그래프 세팅
-        GraphView graph = findViewById(R.id.barGraph);
-        graph.addSeries(userSeries);
-        graph.addSeries(avgSeries);
+            ViewGroup.LayoutParams params = binding.cardClass.progressBar.getLayoutParams();
+            params.width = progressWidth;
+            binding.cardClass.progressBar.setLayoutParams(params);
+        });
+        // 기준에 맞춘 조언 메세지
+        if (totalClass < 0.6 * standardClass) {
+            binding.cardClass.tvExplain.setText(getString(R.string.Class_txt1));
+            binding.cardClass.colorDot.setBackground(ContextCompat.getDrawable(this, R.drawable.circle_red));
+            binding.cardClass.qualityText.setText("Too Lack");
+        } else if (totalClass < 0.9 * standardClass) {
+            binding.cardClass.tvExplain.setText(getString(R.string.Class_txt2));
+            binding.cardClass.colorDot.setBackground(ContextCompat.getDrawable(this, R.drawable.circle_yellow));
+            binding.cardClass.qualityText.setText("Still Not Enough");
+        } else{
+            binding.cardClass.tvExplain.setText(getString(R.string.Class_txt3));
+            binding.cardClass.colorDot.setBackground(ContextCompat.getDrawable(this, R.drawable.circle_green));
+            binding.cardClass.qualityText.setText("Enough");
+        }
 
-        graph.getGridLabelRenderer().setHorizontalAxisTitle("Activity");
-        graph.getGridLabelRenderer().setVerticalAxisTitle("Hours");
-
-        // X축에 활동명 라벨만
-        StaticLabelsFormatter formatter = new StaticLabelsFormatter(graph);
-        formatter.setHorizontalLabels(labels);
-        graph.getGridLabelRenderer().setLabelFormatter(formatter);
-        graph.getGridLabelRenderer().setNumHorizontalLabels(labels.length);
-        graph.getGridLabelRenderer().setHorizontalLabelsVisible(true);
 
         // 7) 아래 OK 버튼 → 종료
         Button btnOk = findViewById(R.id.btnOkReport);
