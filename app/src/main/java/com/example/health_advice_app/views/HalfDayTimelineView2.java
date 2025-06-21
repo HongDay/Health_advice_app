@@ -147,8 +147,8 @@ public class HalfDayTimelineView2 extends View {
                 float bottom = top + (durMin / (float)INTERVAL_MIN) * stepH;
 
                 canvas.drawRect(
-                        leftLabelWidth+2, top+2,
-                        w-2,             bottom-2,
+                        leftLabelWidth+2, top,
+                        w-2,             bottom,
                         blockPaint
                 );
 

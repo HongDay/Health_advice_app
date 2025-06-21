@@ -39,6 +39,9 @@ public class ReportActivity extends AppCompatActivity {
         MyApp app = (MyApp) getApplication();
         List<MyData> dataList = new ArrayList<>(app.getMyDataList());
 
+        String name = app.getName();
+        binding.title.setText(name+"'s Daily Report");
+
         // Sleep 리포트 화면 구성
         binding.cardSleep.titleText.setText("Sleep");
         float standardSleep = 7 * 60; // 7시간

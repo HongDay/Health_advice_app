@@ -57,11 +57,14 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.health_advice_app.Data.FFT;
+import com.example.health_advice_app.Data.MyApp;
 import com.example.health_advice_app.Data.SensorData;
 import com.example.health_advice_app.Data.SensorViewModel;
 import com.example.health_advice_app.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
+
+    private MyApp appData;
 
     private ActivityMainBinding binding;
     private SensorViewModel sensorViewModel;
@@ -153,10 +156,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+
+        appData = (MyApp) getApplication();
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         // Optimize 버튼은 처음에 숨김
         binding.button.setVisibility(View.GONE);
+
+        String name = appData.getName();
+        binding.tvHiname.setText("Hi, " + name + " 👋");
 
         sensorViewModel = new ViewModelProvider(this).get(SensorViewModel.class);
 
@@ -441,6 +450,14 @@ public class MainActivity extends AppCompatActivity {
         binding.toEstimate.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+                if (handler != null && measureTask != null){
+                    handler.removeCallbacks(measureTask);
+                }
+
+                if (scanHandler != null && scanRunnable != null){
+                    scanHandler.removeCallbacks(scanRunnable);
+                }
+
                 Intent intent = new Intent(MainActivity.this, EstimateActivity.class);
                 startActivity(intent);
             }
@@ -503,7 +520,7 @@ public class MainActivity extends AppCompatActivity {
                                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
                                 emailIntent.setType("text/csv");
                                 emailIntent.putExtra(Intent.EXTRA_EMAIL,
-                                        new String[]{"sirusister624@unist.ac.kr"});
+                                        new String[]{"tot0328@unist.ac.kr"});
                                 emailIntent.putExtra(Intent.EXTRA_SUBJECT,
                                         "Sensor Data CSV 파일");
                                 emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
@@ -660,20 +677,6 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (handler != null && measureTask != null){
-            handler.removeCallbacks(measureTask);
-        }
-
-        if (scanHandler != null && scanRunnable != null){
-            scanHandler.removeCallbacks(scanRunnable);
         }
     }
 }

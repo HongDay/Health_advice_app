@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.health_advice_app.Data.MyApp;
 import com.example.health_advice_app.views.WeekTimetableView;
 
 /**
@@ -28,10 +29,13 @@ public class UserInfoActivity extends AppCompatActivity {
     private EditText etWeight;
     private WeekTimetableView weekTimetableView;
     private Button btnContinue;
+    private MyApp appData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        appData = (MyApp) getApplication();
 
         // 반드시 이 순서: (1) 레이아웃을 먼저 inflate → (2) findViewById
         setContentView(R.layout.activity_user_info);
@@ -71,6 +75,9 @@ public class UserInfoActivity extends AppCompatActivity {
 
         // Continue 버튼 클릭 시 CSV 저장하고 다음 화면으로 이동
         btnContinue.setOnClickListener(v -> {
+            String name = etName.getText().toString();
+            appData.setName(name);
+
             weekTimetableView.exportToCsv(UserInfoActivity.this);
             Intent intent = new Intent(UserInfoActivity.this, com.example.health_advice_app.AgreementActivity.class);
             startActivity(intent);

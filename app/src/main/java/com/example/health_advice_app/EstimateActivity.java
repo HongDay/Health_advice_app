@@ -171,6 +171,9 @@ public class EstimateActivity extends AppCompatActivity {
 
         appData = (MyApp) getApplication();
 
+        String name = appData.getName();
+        binding.tvHiName.setText("Hi, " + name + " 👋");
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -185,6 +188,25 @@ public class EstimateActivity extends AppCompatActivity {
         clickScan();
         clickTimetable();
         clickReport();
+        clickAgain();
+    }
+
+    protected void clickAgain() {
+        binding.btnAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (handler != null && measureTask != null) {
+                    handler.removeCallbacks(measureTask);
+                }
+
+                if (scanHandler != null && scanRunnable != null) {
+                    scanHandler.removeCallbacks(scanRunnable);
+                }
+
+                Intent intent = new Intent(EstimateActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     protected void clickTimetable() {
@@ -466,19 +488,19 @@ public class EstimateActivity extends AppCompatActivity {
                     String activity = "";
 
                     if (result == 0) {
-                        binding.tvGuess.setText("In class !!" + seconds);
+                        binding.tvGuess.setText("In class !!");
                         activity = "In Class";
                     }
                     else if (result == 1) {
-                        binding.tvGuess.setText("Doing Something Else !!" + seconds);
+                        binding.tvGuess.setText("Doing Something Else !!");
                         activity = "Other";
                     }
                     else if (result == 2) {
-                        binding.tvGuess.setText("Sleeping !!" + seconds);
+                        binding.tvGuess.setText("Sleeping !!");
                         activity = "Sleep";
                     }
                     else if (result == 3) {
-                        binding.tvGuess.setText("Studying !!" + seconds);
+                        binding.tvGuess.setText("Studying !!");
                         activity = "Study";
                     }
 //                    else if (result == 4) {
@@ -509,7 +531,10 @@ public class EstimateActivity extends AppCompatActivity {
                                                             appData.removelast();
                                                             appData.setprev(prevTimestamp, prevActivity);
                                                             appData.calDuration(seconds-60, "Sleep");
-                                                        }else {appData.calDuration(seconds-60, "Sleep");}
+                                                        }else {
+                                                            appData.removelast();
+                                                            appData.calDuration(seconds-60, "Sleep");
+                                                        }
                                                         Toast.makeText(EstimateActivity.this, "data succesfully modified", Toast.LENGTH_SHORT).show();
                                                         break;
 
@@ -518,7 +543,10 @@ public class EstimateActivity extends AppCompatActivity {
                                                             appData.removelast();
                                                             appData.setprev(prevTimestamp, prevActivity);
                                                             appData.calDuration(seconds-60, "Work out");
-                                                        }else {appData.calDuration(seconds-60, "Work out");}
+                                                        }else {
+                                                            appData.removelast();
+                                                            appData.calDuration(seconds-60, "Work out");
+                                                        }
                                                         Toast.makeText(EstimateActivity.this, "data succesfully modified", Toast.LENGTH_SHORT).show();
                                                         break;
 
@@ -527,7 +555,10 @@ public class EstimateActivity extends AppCompatActivity {
                                                             appData.removelast();
                                                             appData.setprev(prevTimestamp, prevActivity);
                                                             appData.calDuration(seconds-60, "Study");
-                                                        }else {appData.calDuration(seconds-60, "Study");}
+                                                        }else {
+                                                            appData.removelast();
+                                                            appData.calDuration(seconds-60, "Study");
+                                                        }
                                                         Toast.makeText(EstimateActivity.this, "data succesfully modified", Toast.LENGTH_SHORT).show();
                                                         break;
                                                     case 3:
@@ -535,8 +566,10 @@ public class EstimateActivity extends AppCompatActivity {
                                                             appData.removelast();
                                                             appData.setprev(prevTimestamp, prevActivity);
                                                             appData.calDuration(seconds-60, "In Class");
-                                                        }else
+                                                        }else{
+                                                            appData.removelast();
                                                             appData.calDuration(seconds-60, "In Class");
+                                                        }
                                                         Toast.makeText(EstimateActivity.this, "data succesfully modified", Toast.LENGTH_SHORT).show();
                                                         break;
                                                     case 4:
@@ -544,8 +577,10 @@ public class EstimateActivity extends AppCompatActivity {
                                                             appData.removelast();
                                                             appData.setprev(prevTimestamp, prevActivity);
                                                             appData.calDuration(seconds-60, "Other");
-                                                        }else
+                                                        }else{
+                                                            appData.removelast();
                                                             appData.calDuration(seconds-60, "Other");
+                                                        }
                                                         Toast.makeText(EstimateActivity.this, "data succesfully modified", Toast.LENGTH_SHORT).show();
                                                         break;
                                                 }
@@ -613,19 +648,6 @@ public class EstimateActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (handler != null && measureTask != null){
-            handler.removeCallbacks(measureTask);
-        }
-
-        if (scanHandler != null && scanRunnable != null){
-            scanHandler.removeCallbacks(scanRunnable);
         }
     }
 

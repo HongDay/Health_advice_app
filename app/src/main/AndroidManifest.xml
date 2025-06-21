@@ -37,7 +37,7 @@
 
 
 
-        <activity android:name=".SignInActivity"/>
+        <activity android:name=".EstimateActivity"/>
 
         <activity android:name=".UserInfoActivity" />
         <activity android:name=".AgreementActivity" />
@@ -49,7 +49,7 @@
         <activity android:name=".activities.TimetablePreviewActivity"/>
 
         <activity
-            android:name=".EstimateActivity"
+            android:name=".SignInActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

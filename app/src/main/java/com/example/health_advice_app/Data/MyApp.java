@@ -8,10 +8,16 @@ import java.util.List;
 import java.util.Objects;
 
 public class MyApp extends Application {
+
+    private String name = "";
     private long timestamp = -1;
     private String content = "";
 
     private List<MyData> myDataList = new ArrayList<>();
+
+    public void setName(String nam) {name = nam;}
+
+    public String getName() {return name;}
 
     public List<MyData> getMyDataList() {
         return myDataList;
