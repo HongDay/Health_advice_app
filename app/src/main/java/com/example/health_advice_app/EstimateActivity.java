@@ -96,21 +96,27 @@ public class EstimateActivity extends AppCompatActivity {
     private int bufferSize;
     private String category = "null";
     private float[] scalerMean = new float[]{
-            35.570527f, 129.219184f, 625.886798f, -0.03319653f, 0.37283892f, 8.9577285f,
-            0.00130513f, -0.00033624f, -0.001152f, 34.7757803f, 672.599571f, 31751.9310f,
-            20147.0227f, 11668.9246f, 5390.419f, 3391.8493f, 2289.3544f, 1911.4099f,
-            1527.9446f, 1376.7317f, 1766.741f, 35.5655814f, -576.5055f, -38.32193f,
-            -41.61918f, -43.36365f, -49.7514848f, -61.265975f, -66.0f, -67.68222f,
-            -69.91156f, -71.98905f, -73.53052f, 0.1550626f
+            35.5711037f, 129.210991f, 393.60905f, 0.01545038f,
+            0.6406863f, 8.377118f, -0.0111793f, 0.0040375874f,
+            0.0064686124f, 34.78479f, 539.03302f, 28546.7458f,
+            15076.8445f, 6951.40192f, 3084.5708f, 2061.06494f,
+            1504.3542f, 1115.7113f, 878.13397f, 769.793f,
+            911.73035f, 42.767426f, -577.4032f, -42.75327f,
+            -44.972336f, -46.445957f, -51.02198f, -60.97373f,
+            -63.93695f, -65.21917f, -66.57945f, -68.24394f,
+            -69.46386f, 0.23236114f
     };
 
     private float[] scalerStd = new float[]{
-            0.00290304f, 0.0280633f, 2713.1103f, 1.489209f, 1.467125f, 3.491136f,
-            0.1870229f, 0.1726982f, 0.1282379f, 13.4019552f, 1831.7251f, 109496.837f,
-            58282.0597f, 32941.9445f, 16337.5804f, 12033.9056f, 7986.2448f, 6415.703f,
-            5098.6843f, 4995.515f, 6271.593f, 29.0020265f, 82.9884684f, 11.2342774f,
-            9.7020783f, 9.5815264f, 6.8627741f, 9.7729735f, 12.2091376f, 12.7914823f,
-            14.0810195f, 14.8776557f, 15.3404507f, 0.3619644f
+            0.002702204f, 0.027795303f, 558.0688f, 2.4679563f,
+            2.4680464f, 4.3214917f, 0.4705408f, 0.4357442f,
+            0.5515839f, 12.124045f, 1477.0399f, 93497.37f,
+            48009.31f, 22668.137f, 9442.361f, 7076.356f,
+            5017.2144f, 2963.0161f, 2232.1658f, 1814.5264f,
+            1909.5604f, 28.192099f, 81.288116f, 11.619611f,
+            10.704564f, 10.158598f, 7.5056524f, 11.245799f,
+            13.142919f, 14.058966f, 14.902451f, 15.382227f,
+            15.825743f, 0.42233807f
     };
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -492,8 +498,8 @@ public class EstimateActivity extends AppCompatActivity {
                         activity = "In Class";
                     }
                     else if (result == 1) {
-                        binding.tvGuess.setText("Doing Something Else !!");
-                        activity = "Other";
+                        binding.tvGuess.setText("Exercising !!");
+                        activity = "Workout";
                     }
                     else if (result == 2) {
                         binding.tvGuess.setText("Sleeping !!");
@@ -503,9 +509,10 @@ public class EstimateActivity extends AppCompatActivity {
                         binding.tvGuess.setText("Studying !!");
                         activity = "Study";
                     }
-//                    else if (result == 4) {
-//                        // for WorkOut case
-//                    }
+                    else if (result == 4) {
+                        binding.tvGuess.setText("Doing Something Else !!");
+                        activity = "Other";
+                    }
 
                     String prevActivity = appData.getActivity();
                     long prevTimestamp = appData.getTimestamp();

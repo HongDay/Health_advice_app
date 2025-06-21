@@ -45,6 +45,9 @@ public class TFLiteModel {
                 maxIndex = i;
             }
         }
+        if (maxProb < 0.7){    // threshold
+            return 4;
+        }
 
         return maxIndex; // 예측된 클래스 인덱스
     }
