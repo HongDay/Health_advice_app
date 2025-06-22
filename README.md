@@ -29,11 +29,12 @@ Our app can be treated as **Health Lifestyle Assistant**
 So far, all frontend tasks have been completed, including mobile machine learning pre-training, model loading into the app, and implementation of the app’s core features.
 
 Moving forward, we plan to develop a backend server to enhance the app's utility by enabling richer context data storage, more efficient preprocessing, support for complex models, and on-the-fly fine-tuning.
- 
+
+  <br/>
 
 ## 📂 Repository Overview
 
-### Algorithm_assignment1
+### Health_advice_app
 - `App manual video.mp4`
   : Video for 'how to use this app'
 - Machine Learning / EDA code
@@ -43,3 +44,4 @@ Moving forward, we plan to develop a backend server to enhance the app's utility
 - Context data
   : Collected context data in .txt format
 - TFLite ML model
+- All other folders and files are app source code
